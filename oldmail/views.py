@@ -232,6 +232,18 @@ def authenticate_callback(request):
     refresh_token = content_d['refresh_token']
 
 
+class ClientDetail(DetailView):
+    model = Client
+    template_name = 'client_detail.html'
+
+    def get_success_url(self):
+        return lazy_reverse('client_list', self.request.user.profile.account.slug)
+
+    def render_to_response(self, context, **response_kwargs):
+        print 'context', context
+        return super(ClientDetail, self).render_to_response(context, **response_kwargs)
+
+
 class ClientCreate(CreateView):
     model = Client
     template_name = 'client_form.html'

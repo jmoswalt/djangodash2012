@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="row">
+
+    <div class="span12 offset1">
+        <h1>{{ object }}</h1>
+    </div>
+
+    <div class="span2 offset1">
+
+        {% if object.contacts %}
+        <h2>Contacts</h2>
+        {% for contact in object.contacts %}
+            <div><a href="{% url contact_change user.profile.account.slug contact.pk %}">{{ contact }}</a></div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+
+    <div class="span8">
+        {% for message in object.messages %}
+            <div><a href="{% url message_detail user.profile.account.slug message.pk %}">{{ message }}</a></div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock body %}
