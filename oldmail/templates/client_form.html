@@ -1,23 +1,15 @@
 {% extends "base.html" %}
+{% load oldmail_tags %}
+
+{% block title %}Add a client{% endblock title %}
 
 {% block body %}
 <div class="row">
     <div class="span5 offset4">
+        <h2>Add a Client</h2>
         <form class="form-horizontal" action="" method="POST">
             {% csrf_token %}
-            {% for field in form %}
-            <div class="control-group {% if field.errors %}error{% endif %}">
-                <label class="control-label" for="{{ field.label }}">{{ field.label }}</label>
-                <div class="controls">
-                    {{ field }}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                        <span class="help-inline">{{ error }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+            {% bootstrap_form form %}
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">Save</button>
             </div>

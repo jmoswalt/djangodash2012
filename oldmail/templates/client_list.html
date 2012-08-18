@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="row">
-    <div><a href="{% url client_add user.profile.account.slug %}">Add a client</a></div>
-    <div class="span5 offset4">
+<div class="span3">
+    {% include "account_sidebar.html" %}
+</div>
+<div class="span9">
     {% if object_list %}
     <ul>
     {% for object in object_list %}
@@ -12,6 +13,5 @@
     </ul>
     {% endif %}
 
-    </div>
 </div>
 {% endblock body %}

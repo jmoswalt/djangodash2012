@@ -2,21 +2,20 @@
     <div>
         <h4>Account members</h4>
         <ul>
-        {% for profile in account.profiles %}
+        {% for profile in request.user.profile.account.profiles %}
             <li><a href="{% url profile_change user.profile.account.slug profile.pk %}">{{ profile.user.get_full_name }} ({{ profile.user.email }})</a></li>
         {% endfor %}
         {% if request.user.profile.is_account_admin %}
-            <li><a href="{% url account_invite account.slug %}">Invite more people</a>
+            <li><a href="{% url account_invite user.profile.account.slug %}">Invite more people</a>
         {% endif %}
         </ul>
     </div>
     <div>
         <h4>Clients</h4>
         <ul>
-        {% for client in account.clients %}
+        {% for client in request.user.profile.account.clients %}
             <li><a href="{% url client_change user.profile.account.slug client.pk %}">{{ client.name }}</a></li>
-        {% empty %}
-        <a href="{% url client_add user.profile.account.slug %}">Add your first client</a>
         {% endfor %}
+        <a href="{% url client_add user.profile.account.slug %}">Add a client</a>
         </ul>
     </div>
