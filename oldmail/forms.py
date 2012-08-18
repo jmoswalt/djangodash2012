@@ -85,6 +85,6 @@ class AccountAddForm(forms.ModelForm):
                                 username=self.cleaned_data['email'])
         u.set_password(self.cleaned_data['password'])
         u.save()
-        p = Profile.objects.create(user=u, account=account)
+        p = Profile.objects.create(user=u, account=account, is_account_admin=True)
         # TODO send password_reset confirmation
         return p

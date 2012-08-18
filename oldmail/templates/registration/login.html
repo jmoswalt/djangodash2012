@@ -12,6 +12,7 @@
 <div class="span3 offset4 well">
     <h2>Login to Oldmail</h2>
     <form class="form-vertical" method="post" action="">{% csrf_token %}
+        {{ form.errors }}
         {% bootstrap_form form %}
         <div class="form-actions">
             <button type="submit" class="btn btn-success">Login</button>
