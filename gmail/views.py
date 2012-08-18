@@ -1,4 +1,4 @@
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, ListView, DetailView
 
 from gmail.forms import AccountAddForm
 
