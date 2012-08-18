@@ -5,16 +5,18 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import authenticate as dj_auth
 from django.views.generic.edit import FormView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 from django.conf import settings
 from django.http import Http404
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from oldmail.forms import AccountAddForm
+from oldmail.models import Account
 
 
 class HomePageView(TemplateView):
@@ -25,9 +27,17 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
-class AccountView(TemplateView):
+class AccountView(DetailView):
+    model = Account
     template_name = "account_detail.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        obj = get_object_or_404(Account, pk=self.request.user.profile.account.pk)
+        return obj
 
 class AccountAdd(FormView):
     template_name = 'account_create.html'
