@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock title %}</title>
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link href="{{ STATIC_URL }}css/all.css" rel="stylesheet">
+
+    {% block css %}{% endblock css %}
+
+    {% block head %}{% endblock head %}
+
+</head>
+<body>
+    <div id="wrapper" class="container">
+        {% include "header.html" %}
+        <div class="row">{% include "messages.html" %}</div>
+        <div class="row">{% block body %}{% endblock body %}</div>
+        <div id="footer" class="row">{% include "footer.html" %}</div>
+    </div> <!-- /#wrapper -->
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-alert.js"></script>
+    {% block js %}{% endblock js %}
+</body>
+</html>

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
-from gmail.models import Account, Profile
+from oldmail.models import Account, Profile
 
 
 class AccountAddForm(forms.ModelForm):
@@ -28,7 +28,7 @@ class AccountAddForm(forms.ModelForm):
         if account:
             try:
                 Account.objects.get(name=account)
-                self._errors['account'] = 'That account name is already taken. Please pick a new one.'
+                self._errors['account'] = ['That account name is already taken. Please pick a new one.']
             except:
                 pass
         return account
@@ -38,7 +38,7 @@ class AccountAddForm(forms.ModelForm):
         if email:
             try:
                 User.objects.get(username=email)
-                self._errors['email'] = 'That email is already taken. Do you already have an account?'
+                self._errors['email'] = ['That email is already taken. Do you already have an account?']
             except:
                 pass
         return email
