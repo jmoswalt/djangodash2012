@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^$', views.HomePageView.as_view(), name="homepage"),
     url(r'^about/$', views.AboutView.as_view(), name="about"),
     url(r'^signup/$', views.AccountAdd.as_view(), name="signup"),
+    url(r'^accounts/list/$', views.AccountListView.as_view(), name="account_list"),
 
     url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
     url(r'^auth/', include('django.contrib.auth.urls')),

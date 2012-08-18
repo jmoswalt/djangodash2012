@@ -4,10 +4,9 @@ from oldmail import views
 
 
 urlpatterns = patterns('oldmail.views',
-    url(r'^account/$', views.AccountView.as_view(), name="account_detail"),
-    #url(r'^/account/add/$', views.AccountAdd.as_view(), name="account_add"),
-    url(r'^account/list/$', views.AccountListView.as_view(), name="account_list"),
-    url(r'^account/change/$', views.AccountChangeView.as_view(), name="account_change"),
+    url(r'', views.AccountView.as_view(), name="account_detail"),
+
+    url(r'^change/$', views.AccountChangeView.as_view(), name="account_change"),
 
     url(r'^oauth2/$', 'authenticate', name="authenticate"),
     url(r'^oauth2callback/$', 'authenticate_callback', name="authenticate_callback"),
