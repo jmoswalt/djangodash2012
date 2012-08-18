@@ -23,7 +23,7 @@ class Account(models.Model):
 class Client(models.Model):
     """docstring for Client"""
     name = models.CharField(max_length=500)
-    account = models.ForeignKey('Account')
+    account = models.ForeignKey('Account', editable=False)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 

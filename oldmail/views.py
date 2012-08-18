@@ -239,6 +239,16 @@ class ClientCreate(CreateView):
     def get_success_url(self):
         return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
+    def post(self, request, *args, **kwargs):
+        self.account = request.user.profile.account
+        return super(ClientCreate, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.account = self.account
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class ClientList(ListView):
     model = Client
