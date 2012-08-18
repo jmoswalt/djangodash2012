@@ -11,12 +11,11 @@
           </a>
      
           <!-- Be sure to leave the brand out there if you want it shown -->
-          <a class="brand" href="#">Old Mail</a>
+          <a class="brand" href="{% url homepage %}">Old Mail</a>
      
           <!-- Everything you want hidden at 940px or less, place within here -->
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="/">Home</a></li>
               {% if not request.user.is_authenticated %}
               <li><a href="{% url signup %}">Signup</a></li>
               <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
