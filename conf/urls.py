@@ -1,8 +1,11 @@
-from django.conf.urls import patterns, include
+from django.conf.urls import patterns, url, include
+from django.views.generic.simple import redirect_to
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
+from oldmail import views
+
 
 urlpatterns = patterns('',
     # Examples:
@@ -14,5 +17,11 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    (r'', include('oldmail.urls')),
+    url(r'^$', views.HomePageView.as_view(), name="homepage"),
+    url(r'^about/$', views.AboutView.as_view(), name="about"),
+    url(r'^signup/$', views.AccountAdd.as_view(), name="signup"),
+
+    url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
+    url(r'^auth/', include('django.contrib.auth.urls')),
+    (r'(?P<slug>[\w\-]+)/', include('oldmail.urls')),
 )

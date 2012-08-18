@@ -13,6 +13,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
@@ -37,7 +38,12 @@ class AccountView(DetailView):
         return super(AccountView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        obj = get_object_or_404(Account, pk=self.request.user.profile.account.pk)
+        user = self.request.user
+        obj = get_object_or_404(Account, slug=self.kwargs['slug'])
+        # Check if you can see this object
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == obj:
+                raise Http404
         return obj
 
 
@@ -51,11 +57,15 @@ class AccountAdd(FormView):
         user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
         login(self.request, user)
         messages.success(self.request, 'Your account for %s has been created. You are now logged in.' % account.name, extra_tags='success')
-        return HttpResponseRedirect(reverse('account_detail'))
+        return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
 class AccountListView(ListView):
     template_name = "account_list.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountListView, self).dispatch(*args, **kwargs)
 
 
 class AccountChangeView(UpdateView):
@@ -72,7 +82,7 @@ class AccountChangeView(UpdateView):
 
     def form_valid(self, form):
         account = form.save_account()
-        return HttpResponseRedirect(reverse('account_detail'))
+        return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
 #@login_required

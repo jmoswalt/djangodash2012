@@ -21,7 +21,7 @@
               <li><a href="{% url signup %}">Signup</a></li>
               <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
               {% else %}
-              <li><a href="#">Account: {{ request.user.profile.account.name }}</a></li>
+              <li><a href="{% url account_detail request.user.profile.account.slug %}">Account: {{ request.user.profile.account.name }}</a></li>
               <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
               {% endif %}
             </ul>

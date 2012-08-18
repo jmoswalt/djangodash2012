@@ -7,4 +7,11 @@
         {% endfor %}
         </ul>
     </div>
-    
+    <div>
+        <h4>Clients</h4>
+        <ul>
+        {% for client in account.clients %}
+            <li>{{ client.name }}</li>
+        {% endfor %}
+        </ul>
+    </div>

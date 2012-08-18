@@ -1,20 +1,13 @@
-from django.conf.urls.defaults import patterns, url, include
-from django.views.generic.simple import redirect_to
+from django.conf.urls.defaults import patterns, url
 
 from oldmail import views
 
 
-urlpatterns = patterns('',
-    url(r'^$', views.HomePageView.as_view(), name="homepage"),
-    url(r'^about/$', views.AboutView.as_view(), name="about"),
-    url(r'^signup/$', views.AccountAdd.as_view(), name="signup"),
+urlpatterns = patterns('oldmail.views',
     url(r'^account/$', views.AccountView.as_view(), name="account_detail"),
     #url(r'^/account/add/$', views.AccountAdd.as_view(), name="account_add"),
     url(r'^account/list/$', views.AccountListView.as_view(), name="account_list"),
     url(r'^account/change/$', views.AccountChangeView.as_view(), name="account_change"),
-
-    url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
-    url(r'^auth/', include('django.contrib.auth.urls')),
 
     url(r'^oauth2/$', 'authenticate', name="authenticate"),
     url(r'^oauth2callback/$', 'authenticate_callback', name="authenticate_callback"),

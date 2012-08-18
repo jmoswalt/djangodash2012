@@ -40,6 +40,7 @@ class Profile(models.Model):
     """docstring for Profile"""
     account = models.ForeignKey('Account')
     user = models.OneToOneField(User, related_name="profile")
+    is_verified = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.user.get_full_name()
