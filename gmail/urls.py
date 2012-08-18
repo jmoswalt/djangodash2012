@@ -1,18 +1,16 @@
 from django.conf.urls.defaults import patterns, url
-
 from gmail import views
 
 
 urlpatterns = patterns('gmail.views',
-
-    # url(r'^$', 'homepage', name="homepage"),
-    # url(r'^/about/$', 'about', name="about"),
+    url(r'^$', views.HomePageView.as_view(), name="homepage"),
+    url(r'^/about/$', views.AboutView.as_view(), name="about"),
     url(r'^signup/$', views.AccountAdd.as_view(), name="signup"),
 
-    # url(r'^/account/$', 'account_detail', name="account-detail"),
-    # url(r'^/account/add/$', 'account_add', name="account-add"),
-    # url(r'^/account/list/$', 'account_list', name="account-list"),
-    # url(r'^/account/change/$', 'account_change', name="account-change"),
+    url(r'^/account/$', views.AccountView.as_view(), name="account-detail"),
+    url(r'^/account/add/$', views.AccountAddView.as_view(), name="account-add"),
+    url(r'^/account/list/$', views.AccountListView.as_view(), name="account-list"),
+    url(r'^/account/change/$', views.AccountChangeView.as_view(), name="account-change"),
 
     # url(r'^/client/$', 'client_detail', name="client-detail"),
     # url(r'^/client/add/$', 'client_add', name="client-add"),
