@@ -4,6 +4,11 @@
 {% block title %}Login to your Oldmail Account{% endblock title %}
 
 {% block body %}
+{% if request.user.is_authenticated %}
+<div class="span12">
+    <h1>Sorry, but you can't go here.</h1>
+</div>
+{% else %}
 <div class="span3 offset4 well">
     <h2>Login to Oldmail</h2>
     <form class="form-vertical" method="post" action="">{% csrf_token %}
@@ -12,5 +17,6 @@
             <button type="submit" class="btn btn-success">Login</button>
         </div>
     </form>
-</diV>
+</div>
+{% endif %}
 {% endblock body %}

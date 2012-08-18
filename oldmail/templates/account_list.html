@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Administrators - Full Account list{% endblock title %}
+
+{% block body %}
+<div class="span12">
+    <h1>All Accounts</h1>
+    {% for account in account_list %}
+    <li><a href="{% url account_detail account.slug %}">{{ account.name }}</a></li>
+    {% endfor %}
+</div>
+{% endblock body %}

@@ -13,12 +13,12 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client
 from oldmail.forms import AccountAddForm, AccountChangeForm
+from oldmail.decorators import staff_or_super_required
 
 
 class HomePageView(TemplateView):
@@ -61,9 +61,10 @@ class AccountAdd(FormView):
 
 
 class AccountListView(ListView):
+    model = Account
     template_name = "account_list.html"
 
-    @method_decorator(login_required)
+    @method_decorator(staff_or_super_required)
     def dispatch(self, *args, **kwargs):
         return super(AccountListView, self).dispatch(*args, **kwargs)
 
