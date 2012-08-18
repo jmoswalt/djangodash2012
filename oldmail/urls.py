@@ -13,7 +13,7 @@ urlpatterns = patterns('oldmail.views',
     url(r'^oauth2callback/$', 'authenticate_callback', name="authenticate_callback"),
 
     # url(r'^client/$', 'client_detail', name="client_detail"),
-    url(r'^client/add/$', views.ClientCreate.as_view(), name="client_add"),
+    # url(r'^client/add/$', views.ClientCreate.as_view(), name="client_add"),
     # url(r'^client/list/$', 'client_list', name="client_list"),
     # url(r'^client/change/$', 'client_change', name="client_change"),
 
