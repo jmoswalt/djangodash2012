@@ -2,6 +2,8 @@ import urllib, urllib2
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth import authenticate as dj_auth
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -35,7 +37,9 @@ class AccountAdd(FormView):
         account = form.add_account()
         profile = form.add_profile(account)
         # TODO Redirect to the profile detail page
-        messages.success(self.request, 'Successfully added a profile: %s.' % profile.user.get_full_name(), extra_tags='success')
+        user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
+        login(self.request, user)
+        messages.success(self.request, 'Your account for %s has been created. You are now logged in.' % account.name, extra_tags='success')
         return HttpResponseRedirect(reverse('homepage'))
 
 

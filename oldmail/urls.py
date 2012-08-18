@@ -1,4 +1,6 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
+from django.views.generic.simple import redirect_to
+
 from oldmail import views
 
 
@@ -38,4 +40,7 @@ urlpatterns = patterns('oldmail.views',
     # url(r'^/link/add/$', 'link_add', name="link-add"),
     # url(r'^/link/list/$', 'link_list', name="link-list"),
     # url(r'^/link/change/$', 'link_change', name="link-change"),
+
+    url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
+    url(r'^auth/', include('django.contrib.auth.urls')),
 )

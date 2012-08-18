@@ -20,7 +20,7 @@ class Client(models.Model):
 class Profile(models.Model):
     """docstring for Profile"""
     account = models.ForeignKey('Account')
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User, related_name="profile")
 
 
 class Contact(models.Model):

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load oldmail_tags %}
+
+{% block title %}Login to your Oldmail Account{% endblock title %}
+
+{% block body %}
+<div class="span3 offset4 well">
+    <h2>Login to Oldmail</h2>
+    <form class="form-vertical" method="post" action="">{% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Login</button>
+        </div>
+    </form>
+</diV>
+{% endblock body %}
