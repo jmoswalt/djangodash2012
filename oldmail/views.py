@@ -48,18 +48,25 @@ class AccountChangeView(TemplateView):
 def authenticate(request, template_name = 'oldmail/authenticate.html'):
     """
     Authenticate a user with his/her gmail account. 
+    
+    access_type: online or offline
+    approval_prompt: force or auto
     """
     # construct the url to authenticate
     if not all([hasattr(settings, 'OAUTH2_CLIENT_ID'),
                 hasattr(settings, 'OAUTH2_REDIRECT_URL')]):
         raise Http404
+    
     if request.method == "POST":
         url = settings.OAUTH2_ENDPOINT
         params = {'scope': settings.OAUTH2_SCOPE,
                   'client_id': settings.OAUTH2_CLIENT_ID,
                   'redirect_uri': settings.OAUTH2_REDIRECT_URL,
-                  'response_type': 'token',
-                  'state': ''}
+                  'response_type': 'code',
+                  'state': '',
+                  'access_type': 'offline',
+                  'approval_prompt': 'auto'} 
+        #TODO: assign user to the state param
         url = '%s?%s' % (url, urllib.urlencode(params))
         
         return HttpResponseRedirect(url)
