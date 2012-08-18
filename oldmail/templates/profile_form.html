@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <div class="span5 offset4">
+        <form class="form-horizontal" action="" method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="control-group {% if field.errors %}error{% endif %}">
+                <label class="control-label" for="{{ field.label }}">{{ field.label }}</label>
+                <div class="controls">
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                        <span class="help-inline">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}

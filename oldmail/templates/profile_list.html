@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <div class="span5 offset4">
+    {% if object_list %}
+    <ul>
+    {% for object in object_list %}
+        <li><a href="{% url profile_change user.profile.account.slug object.pk %}">{{ object }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+    </div>
+</div>
+{% endblock body %}

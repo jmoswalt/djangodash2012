@@ -16,8 +16,8 @@ urlpatterns = patterns('oldmail.views',
 
     # url(r'^profile/$', 'profile_detail', name="profile_detail"),
     # url(r'^profile/add/$', 'profile_add', name="profile_add"),
-    # url(r'^profile/list/$', 'profile_list', name="profile_list"),
-    # url(r'^profile/change/$', 'profile_change', name="profile_change"),
+    url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
+    url(r'^profile/change/(?P<pk>\d+)/$', views.ProfileChange.as_view(), name="profile_change"),
 
     # url(r'contact/$', 'contact_detail', name="contact_detail"),
     url(r'^contact/add/$', views.ContactCreate.as_view(), name="contact_add"),

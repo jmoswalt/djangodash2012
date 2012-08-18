@@ -3,7 +3,7 @@
         <h4>Account members</h4>
         <ul>
         {% for profile in account.profiles %}
-            <li>{{ profile.user.get_full_name }}</li>
+            <li><a href="{% url profile_change user.profile.account.slug profile.pk %}">{{ profile.user.get_full_name }}</a></li>
         {% endfor %}
         </ul>
     </div>

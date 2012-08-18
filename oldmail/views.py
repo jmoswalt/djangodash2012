@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
-from oldmail.models import Account, Client, Contact
+from oldmail.models import Account, Client, Contact, Profile
 from oldmail.forms import AccountAddForm, AccountChangeForm
 from oldmail.decorators import staff_or_super_required
 
@@ -190,3 +190,26 @@ class ContactChange(UpdateView):
 
     def get_success_url(self):
         return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+
+
+class ProfileList(ListView):
+    model = Profile
+    template_name = 'profile_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileList, self).get_context_data(**kwargs)
+        print context
+        return context
+
+
+class ProfileChange(UpdateView):
+    model = Profile
+    template_name = 'profile_form.html'
+
+    def get_success_url(self):
+        return lazy_reverse('profile_list', self.request.user.profile.account.slug)
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileChange, self).get_context_data(**kwargs)
+        print context
+        return context
