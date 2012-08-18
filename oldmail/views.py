@@ -1,22 +1,23 @@
-import urllib, urllib2
+import urllib
+import urllib2
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import authenticate as dj_auth
-from django.views.generic.edit import FormView, UpdateView
-from django.views.generic import TemplateView, DetailView
+from django.views.generic.edit import FormView, UpdateView, CreateView
+from django.views.generic import TemplateView, DetailView, ListView
 from django.conf import settings
 from django.http import Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from oldmail.utils import lazy_reverse
+from oldmail.models import Account, Client
 from oldmail.forms import AccountAddForm, AccountChangeForm
-from oldmail.models import Account
 
 
 class HomePageView(TemplateView):
@@ -53,7 +54,7 @@ class AccountAdd(FormView):
         return HttpResponseRedirect(reverse('account_detail'))
 
 
-class AccountListView(TemplateView):
+class AccountListView(ListView):
     template_name = "account_list.html"
 
 
@@ -105,7 +106,7 @@ def authenticate(request, template_name = 'authenticate.html'):
     return render_to_response(template_name, {'folder_name': 
                                        settings.CLIENT_FOLDER_NAME},
             context_instance=RequestContext(request))
-     
+
 
 def authenticate_callback(request):
     """
@@ -117,25 +118,28 @@ def authenticate_callback(request):
         # redirect to let them try again
         messages.add_message(request, messages.ERROR, 'Access denied.')
         return HttpResponseRedirect(reverse('authenticate'))
-        
+
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
-         
+
     # exachange the authorization code for an access token and a refresh token
     params = {'code': code,
               'client_id': settings.OAUTH2_CLIENT_ID,
               'client_secret': settings.OAUTH2_CLIENT_SECRET,
               'redirect_uri': settings.OAUTH2_REDIRECT_URL,
-              'grant_type': 'authorization_code'} 
+              'grant_type': 'authorization_code'}
     result = urllib2.urlopen('http://example.com', urllib.urlencode(params))
     content = result.read()
-    
+
     # a successful response is returned as a JSON array
     content_d = simplejson.loads(content)
     access_token = content_d['access_token']
     expires_in = content_d['expires_in']
     token_type = content_d['token_type']
     refresh_token = content_d['refresh_token']
-    
 
-    
+
+@login_required
+class ClientCreate(CreateView):
+    model = Client
+    success_url = lazy_reverse('homepage')
