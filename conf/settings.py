@@ -22,7 +22,7 @@ except:
     # no .env file or errors in the file
     pass
 
-DEBUG = True
+DEBUG = env('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
