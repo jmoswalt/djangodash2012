@@ -170,3 +170,29 @@ class ProfileAddForm(forms.ModelForm):
         p = Profile.objects.create(user=u, account_id=self.cleaned_data['account'], is_verified=True)
         # TODO send password_reset confirmation
         return p
+
+
+class ProfileChangeForm(forms.ModelForm):
+    email = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    password = forms.CharField(min_length=4, widget=forms.PasswordInput, required=False)
+
+    class Meta:
+        model = User
+
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'password',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileChangeForm, self).__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+
+        if password:  # validated (length) via form field
+            self.instance.set_password(password)
+
+        return self.instance.password

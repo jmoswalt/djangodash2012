@@ -3,8 +3,8 @@ import urllib2
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.contrib.auth import login
-from django.contrib.auth import authenticate as dj_auth
+from django.contrib.auth import login, authenticate as dj_auth
+from django.contrib.auth.models import User
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
@@ -17,7 +17,7 @@ from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact
-from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm
+from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
 from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
 
@@ -290,7 +290,8 @@ class ProfileList(ListView):
 
 
 class ProfileChange(UpdateView):
-    model = Profile
+    model = User
+    form_class = ProfileChangeForm
     template_name = 'profile_form.html'
 
     def get_success_url(self):
