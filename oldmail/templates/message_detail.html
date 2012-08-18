@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="span12">
+    <h1>Message {{ object.pk }}</h1>
+    {{ message.m_body|safe }}
+</div>
+
+{% endblock body %}

@@ -27,7 +27,7 @@ urlpatterns = patterns('oldmail.views',
     url(r'^contact/list/$', views.ContactList.as_view(), name="contact_list"),
     url(r'^contact/change/(?P<pk>\d+)/$', views.ContactChange.as_view(), name="contact_change"),
 
-    # url(r'^message/$', 'message_detail', name="message_detail"),
+    url(r'^message/(?P<pk>\d+)/$', views.MessageView.as_view(), name="message_detail"),
     # url(r'^message/add/$', 'message_add', name="message_add"),
     # url(r'^message/list/$', 'message_list', name="message_list"),
     # url(r'^message/change/$', 'message_change', name="message_change"),

@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
-from oldmail.models import Account, Client, SignupLink, Profile, Contact
+from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
 from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
@@ -166,6 +166,28 @@ class ProfileVerifyView(DetailView):
     def render_to_response(self, context):
         return HttpResponseRedirect(reverse('account_invite', args=[self.get_object().account.slug]))
 
+
+class MessageView(DetailView):
+    """
+    View of a single message
+    """
+    template_name = 'message_detail.html'
+    model = Message
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MessageView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        user = self.request.user
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        # Check if you can see this object
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == account:
+                raise Http404
+
+        obj = get_object_or_404(Message, pk=self.kwargs['pk'])
+        return obj
 
 
 #@login_required
