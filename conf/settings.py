@@ -22,12 +22,11 @@ except:
     # no .env file or errors in the file
     pass
 
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+     #('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
@@ -165,3 +164,13 @@ LOGGING = {
         },
     }
 }
+
+# set up the following settings in your .env
+OAUTH2_CLIENT_ID = env('OAUTH2_CLIENT_ID', '')
+OAUTH2_CLIENT_SECRET = env('OAUTH2_CLIENT_SECRET', '')
+OAUTH2_REDIRECT_URL = env('OAUTH2_REDIRECT_URL', '')
+OAUTH2_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth'
+OAUTH2_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
+CLIENT_FOLDER_NAME = env('CLIENT_FOLDER_NAME', 'clients')
+
+

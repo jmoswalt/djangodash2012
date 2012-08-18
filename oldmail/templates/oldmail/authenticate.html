@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block css %}
+{{ block.super }}
+<style>
+	.oauth-btn{
+		margin: 2em;
+	}
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="span12">
+    <h1>Set Up and Authorize</h1>
+    <ol>
+    <li>Step 1: create a folder "{{ folder_name }}" in your gmail account</li>
+    <li>Step 2: Click the button below to authorize your account. </li>
+    <div class="oauth-btn">
+    	<form method="post">{% csrf_token %}
+    		<input type="submit" name="submit" value="Authorize My Gmail" />
+    	</form>
+    </div>
+    </ol>
+</div>
+{% endblock body %}

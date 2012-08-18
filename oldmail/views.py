@@ -1,8 +1,14 @@
+import urllib
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.http import Http404
+from django.template import RequestContext
+from django.shortcuts import render_to_response
+from django.contrib.auth.decorators import login_required
 
 from oldmail.forms import AccountAddForm
 
@@ -37,3 +43,32 @@ class AccountListView(TemplateView):
 
 class AccountChangeView(TemplateView):
     template_name = "oldmail/account_change.html"
+    
+#@login_required
+def authenticate(request, template_name = 'oldmail/authenticate.html'):
+    """
+    Authenticate a user with his/her gmail account. 
+    """
+    # construct the url to authenticate
+    if not all([hasattr(settings, 'OAUTH2_CLIENT_ID'),
+                hasattr(settings, 'OAUTH2_REDIRECT_URL')]):
+        raise Http404
+    if request.method == "POST":
+        url = settings.OAUTH2_ENDPOINT
+        params = {'scope': settings.OAUTH2_SCOPE,
+                  'client_id': settings.OAUTH2_CLIENT_ID,
+                  'redirect_uri': settings.OAUTH2_REDIRECT_URL,
+                  'response_type': 'token',
+                  'state': ''}
+        url = '%s?%s' % (url, urllib.urlencode(params))
+        
+        return HttpResponseRedirect(url)
+    
+    return render_to_response(template_name, {'folder_name': 
+                                       settings.CLIENT_FOLDER_NAME},
+            context_instance=RequestContext(request))
+     
+
+def authenticate_callback(request):
+    pass
+    

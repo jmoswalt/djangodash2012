@@ -11,6 +11,9 @@ urlpatterns = patterns('oldmail.views',
     #url(r'^/account/add/$', views.AccountAdd.as_view(), name="account-add"),
     url(r'^account/list/$', views.AccountListView.as_view(), name="account-list"),
     url(r'^account/change/$', views.AccountChangeView.as_view(), name="account-change"),
+    
+    url(r'^oauth2/$', 'authenticate', name="authenticate"),
+    url(r'^oauth2callback/$', 'authenticate_callback', name="authenticate_callback"),
 
     # url(r'^/client/$', 'client_detail', name="client-detail"),
     # url(r'^/client/add/$', 'client_add', name="client-add"),
