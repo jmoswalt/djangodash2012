@@ -177,11 +177,17 @@ LOGGING = {
 }
 
 # set up the following settings in your .env
+# to be deleted, 
 OAUTH2_CLIENT_ID = env('OAUTH2_CLIENT_ID', '')
 OAUTH2_CLIENT_SECRET = env('OAUTH2_CLIENT_SECRET', '')
 OAUTH2_REDIRECT_URL = env('OAUTH2_REDIRECT_URL', '')
 OAUTH2_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth'
 OAUTH2_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 CLIENT_FOLDER_NAME = env('CLIENT_FOLDER_NAME', 'clients')
+
+OAUTH2_CONSUMER_KEY = env('OAUTH2_CONSUMER_KEY', '')
+OAUTH2_CONSUMER_SECRET = env('OAUTH2_CONSUMER_SECRET', '')
+
+
 
 
