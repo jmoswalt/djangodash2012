@@ -8,9 +8,9 @@ urlpatterns = patterns('gmail.views',
     url(r'^signup/$', views.AccountAdd.as_view(), name="signup"),
 
     url(r'^/account/$', views.AccountView.as_view(), name="account-detail"),
-    url(r'^/account/add/$', views.AccountAddView.as_view(), name="account-add"),
-    url(r'^/account/list/$', views.AccountListView.as_view(), name="account-list"),
-    url(r'^/account/change/$', views.AccountChangeView.as_view(), name="account-change"),
+    url(r'^/account/add/$', views.AccountAdd.as_view(), name="account-add"),
+    url(r'^/account/list/$', views.AccountList.as_view(), name="account-list"),
+    url(r'^/account/change/$', views.AccountChange.as_view(), name="account-change"),
 
     # url(r'^/client/$', 'client_detail', name="client-detail"),
     # url(r'^/client/add/$', 'client_add', name="client-add"),
