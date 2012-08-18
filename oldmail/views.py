@@ -5,8 +5,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import authenticate as dj_auth
-from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
 from django.http import Http404
 from django.template import RequestContext
@@ -150,7 +150,28 @@ def authenticate_callback(request):
     refresh_token = content_d['refresh_token']
 
 
-@login_required
 class ClientCreate(CreateView):
     model = Client
-    success_url = lazy_reverse('homepage')
+    success_url = lazy_reverse('client_list')
+
+
+class ClientList(ListView):
+    model = Client
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientList, self).get_context_data(**kwargs)
+        print context
+        return context
+
+
+class ClientChange(UpdateView):
+    model = Client
+    success_url = lazy_reverse('client_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientChange, self).get_context_data(**kwargs)
+        print context
+        return context
+
+
+
