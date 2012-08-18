@@ -1,11 +1,9 @@
 from django.conf.urls.defaults import patterns, url
-
 from oldmail import views
 
 
 urlpatterns = patterns('oldmail.views',
-    url(r'', views.AccountView.as_view(), name="account_detail"),
-
+    url(r'^$', views.AccountView.as_view(), name="account_detail"),
     url(r'^change/$', views.AccountChangeView.as_view(), name="account_change"),
 
     url(r'^oauth2/$', 'authenticate', name="authenticate"),
@@ -21,10 +19,10 @@ urlpatterns = patterns('oldmail.views',
     # url(r'^profile/list/$', 'profile_list', name="profile_list"),
     # url(r'^profile/change/$', 'profile_change', name="profile_change"),
 
-    # url(r'^contact/$', 'contact_detail', name="contact_detail"),
-    # url(r'^contact/add/$', 'contact_add', name="contact_add"),
-    # url(r'^contact/list/$', 'contact_list', name="contact_list"),
-    # url(r'^contact/change/$', 'contact_change', name="contact_change"),
+    # url(r'contact/$', 'contact_detail', name="contact_detail"),
+    url(r'^contact/add/$', views.ContactCreate.as_view(), name="contact_add"),
+    url(r'^contact/list/$', views.ContactList.as_view(), name="contact_list"),
+    url(r'^contact/change/(?P<pk>\d+)/$', views.ContactChange.as_view(), name="contact_change"),
 
     # url(r'^message/$', 'message_detail', name="message_detail"),
     # url(r'^message/add/$', 'message_add', name="message_add"),

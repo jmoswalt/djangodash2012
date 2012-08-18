@@ -11,7 +11,7 @@
         <h4>Clients</h4>
         <ul>
         {% for client in account.clients %}
-            <li>{{ client.name }}</li>
+            <li><a href="{% url client_change user.profile.account.slug client.pk %}">{{ client.name }}</a></li>
         {% endfor %}
         </ul>
     </div>

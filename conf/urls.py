@@ -24,5 +24,5 @@ urlpatterns = patterns('',
 
     url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
     url(r'^auth/', include('django.contrib.auth.urls')),
-    (r'(?P<slug>[\w\-]+)/', include('oldmail.urls')),
+    url(r'^(?P<slug>[\w\-]+)/', include('oldmail.urls')),
 )

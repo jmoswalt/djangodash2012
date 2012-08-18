@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
-from oldmail.models import Account, Client
+from oldmail.models import Account, Client, Contact
 from oldmail.forms import AccountAddForm, AccountChangeForm
 from oldmail.decorators import staff_or_super_required
 
@@ -152,11 +152,15 @@ def authenticate_callback(request):
 
 class ClientCreate(CreateView):
     model = Client
-    success_url = lazy_reverse('client_list')
+    template_name = 'client_form.html'
+
+    def get_success_url(self):
+        return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
 
 class ClientList(ListView):
     model = Client
+    template_name = 'client_list.html'
 
     def get_context_data(self, **kwargs):
         context = super(ClientList, self).get_context_data(**kwargs)
@@ -166,6 +170,7 @@ class ClientList(ListView):
 
 class ClientChange(UpdateView):
     model = Client
+    template_name = 'client_form.html'
     success_url = lazy_reverse('client_list')
 
     def get_context_data(self, **kwargs):
@@ -174,4 +179,30 @@ class ClientChange(UpdateView):
         return context
 
 
+class ContactCreate(CreateView):
+    model = Contact
+    template_name = 'contact_form.html'
 
+    def get_success_url(self):
+        return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+
+
+class ContactList(ListView):
+    model = Contact
+    template_name = 'contact_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactList, self).get_context_data(**kwargs)
+        print context
+        return context
+
+
+class ContactChange(UpdateView):
+    model = Contact
+    template_name = 'contact_form.html'
+    success_url = lazy_reverse('contact_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactChange, self).get_context_data(**kwargs)
+        print context
+        return context
