@@ -33,7 +33,7 @@ MANAGERS = ADMINS
 
 DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
-SITE_URL = env('SITE_URL', "http://www.oldmail.com")
+SITE_URL = env('SITE_URL', "http://www.theoldmail.com")
 
 
 EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
