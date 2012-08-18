@@ -12,6 +12,8 @@
         <ul>
         {% for client in account.clients %}
             <li><a href="{% url client_change user.profile.account.slug client.pk %}">{{ client.name }}</a></li>
+        {% empty %}
+        <a href="{% url client_add user.profile.account.slug %}">Add your first client</a>
         {% endfor %}
         </ul>
     </div>
