@@ -67,7 +67,7 @@ class Profile(models.Model):
 class Contact(models.Model):
     """docstring for Contact"""
     client = models.ForeignKey('Client', null=True)
-    name = models.CharField(max_length=500)
+    name = models.CharField(max_length=100, blank=True)
     email = models.EmailField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -81,11 +81,15 @@ class Contact(models.Model):
 
 class Message(models.Model):
     """docstring for Message"""
-    gmail_key = models.CharField(max_length=500)
     profile = models.ForeignKey('Profile')
-    client = models.ForeignKey('Client')
-    contact = models.ManyToManyField('Contact')
-    message = models.TextField()
+    client = models.ForeignKey('Client', null=True)
+    contact = models.ForeignKey('Contact')
+    m_uid = models.IntegerField()
+    m_date = models.DateTimeField()
+    m_from = models.CharField(max_length=200)  # Just the email address
+    m_to = models.CharField(max_length=200)  # Just the email address
+    m_subject = models.CharField(max_length=200)
+    m_body = models.TextField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
