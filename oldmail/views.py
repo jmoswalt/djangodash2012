@@ -18,15 +18,15 @@ class HomePageView(TemplateView):
 
 
 class AboutView(TemplateView):
-    template_name = "oldmail/about.html"
+    template_name = "about.html"
 
 
 class AccountView(TemplateView):
-    template_name = "oldmail/account_detail.html"
+    template_name = "account_detail.html"
 
 
 class AccountAdd(FormView):
-    template_name = 'oldmail/account_create.html'
+    template_name = 'account_create.html'
     form_class = AccountAddForm
 
     def form_valid(self, form):
@@ -38,14 +38,14 @@ class AccountAdd(FormView):
 
 
 class AccountListView(TemplateView):
-    template_name = "oldmail/account_list.html"
+    template_name = "account_list.html"
 
 
 class AccountChangeView(TemplateView):
-    template_name = "oldmail/account_change.html"
+    template_name = "account_change.html"
     
 #@login_required
-def authenticate(request, template_name = 'oldmail/authenticate.html'):
+def authenticate(request, template_name = 'authenticate.html'):
     """
     Authenticate a user with his/her gmail account. 
     
