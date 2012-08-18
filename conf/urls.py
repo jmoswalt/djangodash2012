@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^accounts/list/$', views.AccountListView.as_view(), name="account_list"),
 
     url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
+    url(r'^accounts/login/$', redirect_to, {'url': '/auth/login/'}),
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^(?P<slug>[\w\-]+)/', include('oldmail.urls')),
 )

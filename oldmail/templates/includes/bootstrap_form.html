@@ -1,4 +1,5 @@
-{% for field in form %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+{% for field in form.visible_fields %}
     {{ field.required }}
     <div class="control-group {% if field.errors %}error{% endif %}">
         <label class="control-label" for="{{ field.label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
@@ -8,6 +9,8 @@
                 {% for error in field.errors %}
                 <span class="help-inline">{{ error }}</span>
                 {% endfor %}
+            {% else %}
+                <span class="help-inline">{{ field.help_text }}</span>
             {% endif %}
         </div>
     </div>

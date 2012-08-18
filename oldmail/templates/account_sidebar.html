@@ -3,8 +3,11 @@
         <h4>Account members</h4>
         <ul>
         {% for profile in account.profiles %}
-            <li><a href="{% url profile_change user.profile.account.slug profile.pk %}">{{ profile.user.get_full_name }}</a></li>
+            <li><a href="{% url profile_change user.profile.account.slug profile.pk %}">{{ profile.user.get_full_name }} ({{ profile.user.email }})</a></li>
         {% endfor %}
+        {% if request.user.profile.is_account_admin %}
+            <li><a href="{% url account_invite account.slug %}">Invite more people</a>
+        {% endif %}
         </ul>
     </div>
     <div>

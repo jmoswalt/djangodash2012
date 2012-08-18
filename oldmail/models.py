@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 class Account(models.Model):
@@ -81,9 +82,17 @@ class Message(models.Model):
 
 class SignupLink(models.Model):
     """docstring for SignupLink"""
-    message = models.TextField()
+    random_string = models.TextField()
+    account = models.ForeignKey('Account')
+    email = models.EmailField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.pk
+        return '%s' % self.pk
+
+    def get_activate_url(self):
+        return reverse('profile_activate', args=[self.account.slug, self.random_string])
+
+    def get_verify_url(self):
+        return reverse('profile_verify', args=[self.account.slug, self.random_string])

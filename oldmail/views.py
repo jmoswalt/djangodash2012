@@ -16,9 +16,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from oldmail.utils import lazy_reverse
-from oldmail.models import Account, Client, Contact, Profile
-from oldmail.forms import AccountAddForm, AccountChangeForm
+from oldmail.models import Account, Client, SignupLink, Profile, Contact
+from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm
 from oldmail.decorators import staff_or_super_required
+from oldmail.utils import send_email, random_string
 
 
 class HomePageView(TemplateView):
@@ -69,6 +70,45 @@ class AccountListView(ListView):
         return super(AccountListView, self).dispatch(*args, **kwargs)
 
 
+class AccountInviteView(UpdateView):
+    template_name = "account_invite.html"
+    form_class = AccountInviteForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountInviteView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        user = self.request.user
+        if not user.profile.is_account_admin:
+            raise Http404
+        obj = get_object_or_404(Account, slug=self.kwargs['slug'])
+        # Check if you can see this object
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == obj:
+                raise Http404
+        if not user.profile.is_verified:
+            site_url = settings.SITE_URL
+            signup_link = SignupLink.objects.create(random_string=random_string(60), account=obj, email=user.email)
+            message = "You've been invited to Oldmail from %s. Please click the link below to active your account. <br /><br /><a href='%s%s'>%s%s</a>" % (
+                    obj.name,
+                    site_url,
+                    signup_link.get_verify_url(),
+                    site_url,
+                    signup_link.get_verify_url(),
+                )
+            send_email(
+                "Please validate your Oldmail account",
+                message,
+                [user.email]
+                )
+        return obj
+
+    def form_valid(self, form):
+        account = form.send_invites()
+        return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
+
+
 class AccountChangeView(UpdateView):
     template_name = "account_change.html"
     form_class = AccountChangeForm
@@ -78,12 +118,54 @@ class AccountChangeView(UpdateView):
         return super(AccountChangeView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
-        obj = get_object_or_404(Account, pk=self.request.user.profile.account.pk)
+        user = self.request.user
+        obj = get_object_or_404(Account, slug=self.kwargs['slug'])
+        # Check if you can see this object
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == obj:
+                raise Http404
         return obj
 
     def form_valid(self, form):
         account = form.save_account()
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
+
+
+class ProfileAddView(FormView):
+    template_name = 'profile_add.html'
+    form_class = ProfileAddForm
+
+    def get_initial(self):
+        initial = super(ProfileAddView, self).get_initial()
+        signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+        initial['account'] = signup_link.account_id
+        print signup_link.email
+        initial['email'] = signup_link.email
+        return initial
+
+    def form_valid(self, form):
+        profile = form.add_profile()
+        user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
+        login(self.request, user)
+        messages.success(self.request, 'Your profile for %s has been created. You are now logged in.' % profile.account.name, extra_tags='success')
+        return HttpResponseRedirect(reverse('account_detail', args=[profile.account.slug]))
+
+
+class ProfileVerifyView(DetailView):
+    template_name = 'profile_add.html'
+    model = Profile
+
+    def get_object(self, **kwargs):
+        signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+        profile = get_object_or_404(Profile, user__email=signup_link.email)
+        profile.is_verified = True
+        profile.save()
+
+        return profile
+
+    def render_to_response(self, context):
+        return HttpResponseRedirect(reverse('account_invite', args=[self.get_object().account.slug]))
+
 
 
 #@login_required

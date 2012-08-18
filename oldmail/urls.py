@@ -4,6 +4,7 @@ from oldmail import views
 
 urlpatterns = patterns('oldmail.views',
     url(r'^$', views.AccountView.as_view(), name="account_detail"),
+    url(r'^invite/$', views.AccountInviteView.as_view(), name="account_invite"),
     url(r'^change/$', views.AccountChangeView.as_view(), name="account_change"),
 
     url(r'^oauth2/$', 'authenticate', name="authenticate"),
@@ -14,6 +15,8 @@ urlpatterns = patterns('oldmail.views',
     url(r'^client/list/$', views.ClientList.as_view(), name="client_list"),
     url(r'^client/change/(?P<pk>\d+)/$', views.ClientChange.as_view(), name="client_change"),
 
+    url(r'^profile/activate/(?P<random_string>[\w]+)/$', views.ProfileAddView.as_view(), name="profile_activate"),
+    url(r'^profile/verify/(?P<random_string>[\w]+)/$', views.ProfileVerifyView.as_view(), name="profile_verify"),
     # url(r'^profile/$', 'profile_detail', name="profile_detail"),
     # url(r'^profile/add/$', 'profile_add', name="profile_add"),
     url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
