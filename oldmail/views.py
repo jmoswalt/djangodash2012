@@ -262,7 +262,12 @@ class ClientDetail(DetailView):
         return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
     def render_to_response(self, context, **response_kwargs):
-        print 'context', context
+
+        context.update({
+            'edit_link': reverse('client_change', \
+                args=[self.request.user.profile.account.slug, self.object.pk])
+        })
+
         return super(ClientDetail, self).render_to_response(context, **response_kwargs)
 
 

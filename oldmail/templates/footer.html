@@ -1,7 +1,12 @@
 <div class="span12">
 <ul class="breadcrumb center">
-  <li><a href="#">Footer</a> <span class="divider">|</span></li>
-  <li><a href="#">Links</a></li>
+  <li><a href="#">Footer</a>
+
+  {% if edit_link %}
+    <span class="divider">|</span></li>
+    <li><a href="{{ edit_link }}">Edit</a></li>
+  {% endif %}
+
   {% if request.user.is_authenticated %}
   <li class="pull-right"><a href="{% url profile_change user.profile.account user.pk %}">{{ request.user.username }}</a></li>
   {% endif %}
