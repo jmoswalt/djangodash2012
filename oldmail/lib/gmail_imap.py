@@ -1,4 +1,4 @@
-from django.conf import settings
+#from django.conf import settings
 #import imaplib as imaplib_base
 import gmail_mailboxes, gmail_messages, gmail_message
 import oauth2 as oauth
@@ -6,13 +6,16 @@ import oauth2.clients.imap as imaplib
 
 BASE_URL = "https://mail.google.com/mail/b/%s/imap/"
 
+settings_OAUTH2_CONSUMER_KEY = 'www.theoldmail.com'
+settings_OAUTH2_CONSUMER_SECRET = 'nzkkIyRCHFJlooRd7UfsByBN'
+
 class gmail_imap:
 
     def __init__ (self, email, oauth_token, oauth_token_secret):
         self.url = BASE_URL % email
         self.token = oauth.Token(oauth_token, oauth_token_secret)
-        self.consumer = oauth.Consumer(settings.OAUTH2_CONSUMER_KEY,
-                                       settings.OAUTH2_CONSUMER_SECRET
+        self.consumer = oauth.Consumer(settings_OAUTH2_CONSUMER_KEY,
+                                       settings_OAUTH2_CONSUMER_SECRET
                                        )
         self.imap_server = imaplib.IMAP4_SSL("imap.gmail.com")
         self.loggedIn = False
