@@ -196,11 +196,6 @@ class ProfileList(ListView):
     model = Profile
     template_name = 'profile_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(ProfileList, self).get_context_data(**kwargs)
-        print context
-        return context
-
 
 class ProfileChange(UpdateView):
     model = Profile
@@ -208,8 +203,3 @@ class ProfileChange(UpdateView):
 
     def get_success_url(self):
         return lazy_reverse('profile_list', self.request.user.profile.account.slug)
-
-    def get_context_data(self, **kwargs):
-        context = super(ProfileChange, self).get_context_data(**kwargs)
-        print context
-        return context
