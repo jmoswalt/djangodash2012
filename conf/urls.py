@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url, include
 from django.views.generic.simple import redirect_to
+from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -25,5 +26,7 @@ urlpatterns = patterns('',
     url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
     url(r'^accounts/login/$', redirect_to, {'url': '/auth/login/'}),
     url(r'^auth/', include('django.contrib.auth.urls')),
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+    'document_root': settings.STATIC_ROOT, }),
     url(r'^(?P<slug>[\w\-]+)/', include('oldmail.urls')),
 )
