@@ -1,4 +1,27 @@
 # Django settings for oldmail project.
+import os
+from os import environ
+import dj_database_url
+
+PROJECT_ROOT = os.path.abspath('.')
+
+# Helper lambda for gracefully degrading environmental variables:
+env = lambda e, d: environ[e] if environ.has_key(e) else d
+
+# Load the .env file into the os.environ for secure information
+try:
+    env_file = open(os.path.join(PROJECT_ROOT, '.env'), 'r')
+    for line in env_file.readlines():
+        env_key = line.rstrip().split("=")[0]
+        if env_key:
+            # set the environment variable to the value with the start and
+            # end quotes taken off.
+            environ[env_key] = ''.join(line.rstrip().split("=")[1:])[1:-1]
+    env_file.close()
+except:
+    # no .env file or errors in the file
+    pass
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -9,16 +32,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -119,6 +133,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'gunicorn',
+    'gmail',
 )
 
 # A sample logging configuration. The only tangible logging
