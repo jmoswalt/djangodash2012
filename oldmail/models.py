@@ -66,7 +66,7 @@ class Profile(models.Model):
 
 class Contact(models.Model):
     """docstring for Contact"""
-    client = models.ForeignKey('Client')
+    client = models.ForeignKey('Client', null=True)
     name = models.CharField(max_length=500)
     email = models.EmailField()
     create_dt = models.DateTimeField(auto_now_add=True)
