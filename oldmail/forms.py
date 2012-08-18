@@ -5,6 +5,35 @@ from django.template.defaultfilters import slugify
 from oldmail.models import Account, Profile
 
 
+class AccountChangeForm(forms.ModelForm):
+    name = forms.CharField()
+
+    class Meta:
+        model = Account
+
+        fields = (
+            'name',
+        )
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            try:
+                Account.objects.get(slug=slugify(name))
+                self._errors['name'] = ['That account name is already taken. Please pick a new one.']
+            except:
+                pass
+        return name
+
+    def save_account(self):
+        # Save the Account with the new name and slug
+        a = self.instance
+        a.name = self.cleaned_data['name']
+        a.slug = slugify(self.cleaned_data['name'])
+        a.save()
+        return a
+
+
 class AccountAddForm(forms.ModelForm):
     account = forms.CharField()
     email = forms.CharField()
@@ -27,7 +56,7 @@ class AccountAddForm(forms.ModelForm):
         account = self.cleaned_data.get('account')
         if account:
             try:
-                Account.objects.get(name=account)
+                Account.objects.get(slug=slugify(account))
                 self._errors['account'] = ['That account name is already taken. Please pick a new one.']
             except:
                 pass

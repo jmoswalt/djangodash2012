@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth import authenticate as dj_auth
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import TemplateView, DetailView
 from django.conf import settings
 from django.http import Http404
@@ -15,7 +15,7 @@ from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from oldmail.forms import AccountAddForm
+from oldmail.forms import AccountAddForm, AccountChangeForm
 from oldmail.models import Account
 
 
@@ -39,6 +39,7 @@ class AccountView(DetailView):
         obj = get_object_or_404(Account, pk=self.request.user.profile.account.pk)
         return obj
 
+
 class AccountAdd(FormView):
     template_name = 'account_create.html'
     form_class = AccountAddForm
@@ -46,20 +47,33 @@ class AccountAdd(FormView):
     def form_valid(self, form):
         account = form.add_account()
         profile = form.add_profile(account)
-        # TODO Redirect to the profile detail page
         user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
         login(self.request, user)
         messages.success(self.request, 'Your account for %s has been created. You are now logged in.' % account.name, extra_tags='success')
-        return HttpResponseRedirect(reverse('homepage'))
+        return HttpResponseRedirect(reverse('account_detail'))
 
 
 class AccountListView(TemplateView):
     template_name = "account_list.html"
 
 
-class AccountChangeView(TemplateView):
+class AccountChangeView(UpdateView):
     template_name = "account_change.html"
-    
+    form_class = AccountChangeForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountChangeView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        obj = get_object_or_404(Account, pk=self.request.user.profile.account.pk)
+        return obj
+
+    def form_valid(self, form):
+        account = form.save_account()
+        return HttpResponseRedirect(reverse('account_detail'))
+
+
 #@login_required
 def authenticate(request, template_name = 'authenticate.html'):
     """
