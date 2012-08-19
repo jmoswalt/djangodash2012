@@ -25,6 +25,8 @@
               <li><a href="{% url account_detail request.user.profile.account.slug %}">Account: {{ request.user.profile.account.name }}</a></li>
               {% endif %}
 
+            </ul>
+            <ul class="nav pull-right">
               <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
               {% endif %}
             </ul>

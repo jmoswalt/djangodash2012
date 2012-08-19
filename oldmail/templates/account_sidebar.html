@@ -2,7 +2,13 @@
         <h4>Account members</h4>
         <ul>
         {% for profile in request.user.profile.account.profiles %}
-            <li><a href="{% url profile_change user.profile.account.slug profile.pk %}">{{ profile.user.get_full_name }} ({{ profile.user.email }})</a></li>
+            <li>
+                {% if request.user.profile == profile %}
+                    <a href="{% url profile_change user.profile.account.slug profile.user.pk %}">{{ profile.user.get_full_name }} ({{ profile.user.email }})</a>
+                {% else %}
+                    {{ profile.user.get_full_name }} ({{ profile.user.email }})
+                {% endif %}
+            </li>
         {% endfor %}
         {% if request.user.profile.is_account_admin %}
             

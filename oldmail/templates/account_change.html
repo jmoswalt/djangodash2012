@@ -4,7 +4,7 @@
 {% block title %}Change Account Name for {{ account.name }}{% endblock title %}
 
 {% block body %}
-<div class="span3 offset4 well">
+<div class="span5 offset4">
     <h2>Change Account Name</h2>
     <form class="form-vertical" method="post" action="">{% csrf_token %}
         {% bootstrap_form form %}

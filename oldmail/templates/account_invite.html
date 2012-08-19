@@ -5,7 +5,7 @@
 
 {% block body %}
 {% if request.user.profile.is_verified %}
-<div class="span3 offset4 well">
+<div class="span5 offset4">
     <h2>Invite People</h2>
     <form class="form-vertical" method="post" action="">{% csrf_token %}
         {% bootstrap_form form %}
@@ -15,7 +15,7 @@
     </form>
 </div>
 {% else %}
-<div class="span3 offset4 well">
+<div class="span4 offset4 well">
     <p>An email is being sent to you to verify your email address, <strong>{{ request.user.email }}</strong>. Please click the link in the email so that you may then invite others.</p>
 </div>
 {% endif %}

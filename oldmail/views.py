@@ -342,10 +342,6 @@ class ClientCreate(LoginRequiredMixin, CreateView):
     model = Client
     template_name = 'client_form.html'
 
-    def get_success_url(self):
-        messages.success(self.request, 'New Client %s has been added.' % self.object.name, extra_tags='success')
-        return self.object.get_absolute_url()
-
     def post(self, request, *args, **kwargs):
         self.account = request.user.profile.account
         return super(ClientCreate, self).post(request, *args, **kwargs)
@@ -355,6 +351,12 @@ class ClientCreate(LoginRequiredMixin, CreateView):
         self.object.account = self.account
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        messages.success(self.request, 'New Client %s has been added.' % self.object.name, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next'] + "?client_id=%s" % self.object.pk
+        return self.object.get_absolute_url()
 
 
 class ClientList(LoginRequiredMixin, ListView):
@@ -387,6 +389,8 @@ class ContactCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         messages.success(self.request, 'New Contact %s has been added.' % self.object, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
         return self.object.get_absolute_url()
 
 
@@ -399,8 +403,16 @@ class ContactChange(LoginRequiredMixin, UpdateView):
     model = Contact
     template_name = 'contact_form.html'
 
+    def form_valid(self, form):
+        self.object = form.save()
+        contact_messages = Message.objects.filter(contact=self.object).filter(client__isnull=True)
+        contact_messages.update(client=self.object.client)
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
         messages.success(self.request, 'Contact %s has been updated.' % self.object.name, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
         return self.object.get_absolute_url()
 
 

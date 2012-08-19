@@ -1,27 +1,35 @@
 {% extends "base.html" %}
+{% load oldmail_tags %}
+
+{% block title %}Contact form{% endblock title %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/chosen.css"/>
+{% endblock css %}
 
 {% block body %}
 <div class="row">
     <div class="span5 offset4">
         <form class="form-horizontal" action="" method="POST">
             {% csrf_token %}
-            {% for field in form %}
-            <div class="control-group {% if field.errors %}error{% endif %}">
-                <label class="control-label" for="{{ field.label }}">{{ field.label }}</label>
-                <div class="controls">
-                    {{ field }}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                        <span class="help-inline">{{ error }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+            {% bootstrap_form form %}
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">Save</button>
             </div>
         </form>
+        <span id="new-client"><a href="{% url client_add request.user.profile.account.slug %}?next={{ request.path }}">Add a new Client first?</a></span>
     </div>
 </div>
 {% endblock body %}
+
+{% block js %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() { 
+    $("#id_client").addClass('chzn-select');
+    $(".chzn-select").chosen();
+    $("#new-client").hide();
+    $('.control-group:first .help-inline').html($("#new-client").html());
+});
+</script>
+{% endblock js %}

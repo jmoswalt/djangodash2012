@@ -9,18 +9,28 @@
 </div>
 <div class="span4">
     <h4>Contacts</h4>
+    <p><a class="btn btn-small btn-success" href="{% url contact_add request.user.profile.account.slug %}">Add a contact</a></p>
+    {% if account.unassigned_contacts %}
+    <p>Unassigned Contacts</p>
     <ul>
-    {% for contact in account.contacts %}
+    {% for contact in account.unassigned_contacts %}
+        <li><a href="{{ contact.get_absolute_url }}">{{ contact }} ({{ contact.messages|length }})</a></li>
+    {% endfor %}
+    </ul>
+    <p>Assigned Contacts</p>
+    {% endif %}
+    <ul>
+    {% for contact in account.assigned_contacts %}
         <li><a href="{{ contact.get_absolute_url }}">{{ contact }} ({{ contact.messages|length }})</a></li>
     {% endfor %}
     </ul>
 </div>
 <div class="span4">
     <h4>Clients</h4>
-    <a style="btn btn-success" href="{% url client_add user.profile.account.slug %}">Add a client</a>
+    <p><a class="btn btn-small btn-success" href="{% url client_add user.profile.account.slug %}">Add a client</a></p>
     <ul>
-    {% for client in request.user.profile.account.clients %}
-        <li><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></li>
+    {% for client in account.clients %}
+        <li><a href="{{ client.get_absolute_url }}">{{ client.name }} ({{ client.messages|length }})</a></li>
     {% endfor %}
     </ul>
 </div>

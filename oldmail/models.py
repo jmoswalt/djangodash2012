@@ -24,6 +24,12 @@ class Account(models.Model):
     def contacts(self):
         return self.contact_set.all()
 
+    def unassigned_contacts(self):
+        return self.contact_set.filter(client__isnull=True)
+
+    def assigned_contacts(self):
+        return self.contact_set.filter(client__isnull=False)
+
 
 class Client(models.Model):
     """docstring for Client"""
