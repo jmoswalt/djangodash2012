@@ -4,6 +4,9 @@ Project for djangodash 2012
 
 Visit (http://www.theoldmail.com/about/) for more info about this project.
 
+## Installation Instructions
+Install instructions can be found [`INSTALL.md`](https://github.com/jmoswalt/djangodash2012/blob/master/INSTALL.md)
+
 
 # About Old Mail
 
