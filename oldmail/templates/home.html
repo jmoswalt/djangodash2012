@@ -19,7 +19,7 @@
         <h4>Share and archive email with your team to stay on top of things.</h4>
         <p>
         {% if request.user.is_authenticated %}
-        <a href="{% url account_detail request.user.profile.account.slug %}" class="btn btn-primary large">Go to My Account &raquo;</a>
+        <a href="{% url account_detail request.user.profile.account.slug %}" class="btn btn-primary large">Go to My Dashboard &raquo;</a>
         {% else %}
         <a href="{% url signup %}" class="btn btn-success large">Signup Now &raquo;</a>
         {% endif %}</p>
