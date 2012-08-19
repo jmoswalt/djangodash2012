@@ -3,7 +3,7 @@
 
         {% if user.is_authenticated %}
             {% if request.user.profile.oauth_token %}
-            <li><a class="btn btn-primary" href="{% url get_mail user.profile.account.slug %}">Refresh my mail</a></li>
+            <li><a class="btn btn-primary btn-small" href="{% url get_mail user.profile.account.slug %}">Refresh my mail</a></li>
             {% else %}
             <li><a class="btn btn-success" href="{% url oauth_connect user.profile.account.slug %}">Setup mail sync</a></li>
             {% endif %}

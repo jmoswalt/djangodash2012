@@ -18,11 +18,11 @@
 
           {% if request.user.is_authenticated and request.user.profile.account %}
           <li><a href="{% url account_detail request.user.profile.account.slug %}">Dashboard</a></li>
-          <li><a href="{% url search request.user.profile.account.slug %}">Search Clients &amp; Contacts</a></li>
+          <li><a href="{% url search request.user.profile.account.slug %}">Search</a></li>
           {% endif %}
 
           {% if request.user.is_authenticated and request.user.profile.is_account_admin and request.user.profile.account %}
-          <li><a href="{% url account_invite user.profile.account.slug %}">Invite More People</a></li>
+          <li><a href="{% url account_invite user.profile.account.slug %}">Invite</a></li>
           {% endif %}
 
         </ul>
@@ -31,7 +31,10 @@
           <li><a href="{% url signup %}">Signup</a></li>
           <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
           {% else %}
+          {% if request.user.profile.is_account_admin and request.user.profile.account %}
           <li><a href="{% url account_change user.profile.account.slug %}">My Account</a></li>
+          {% endif %}
+          
           <li><a href="{% url profile_change user.profile.account.slug user.pk %}">My Profile</a></li>
           <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
           {% endif %}
