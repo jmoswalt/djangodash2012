@@ -5,12 +5,41 @@
         <h1>Search for clients and contacts</h1>
     </div>
 
+    <form class="span12 form-search" action="" method="get">
+        <input type="text" class="span4 search-query" value="{{ request.GET.q }}" name="q" />
+        <button type="submit" class="btn">Search clients and contacts</button>
+    </form>
+
     <div class="span6">
-        <h2>Clients {{ clients|length }}</h2>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>{{ clients|length }} Client{{ clients|length|pluralize }} Found</th>
+            </tr>
+            {% for client in clients %}
+            <tr>
+                <td><a href="{% url client_message_list user.profile.account.slug client.pk %}">
+                    {{ client }}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Found 0 out of {{ client_total }} clients, I'll show myself out.</td></tr>
+            {% endfor %}
+        </table>
     </div>
 
     <div class="span6">
-        <h2>Contacts {{ contacts|length }}</h2>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>{{ contacts|length }} Contact{{ contacts|length|pluralize }} Found</th>
+            </tr>
+            {% for contact in contacts %}
+            <tr>
+                <td><a href="{% url contact_message_list user.profile.account.slug contact.pk %}">
+                    {{ contact }}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Found 0 out of {{ contact_total }} contacts, you should consider lasik.</td></tr>
+            {% endfor %}
+        </table>
     </div>
 
 {% endblock body %}

@@ -474,9 +474,22 @@ class SearchView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
+        account = self.request.user.profile.account
+        q = self.request.GET.get('q', u'')
 
-        context['clients'] = Client.objects.all()
-        context['contacts'] = Contact.objects.all()
+        context['client_total'] = Client.objects.count()
+        context['contact_total'] = Contact.objects.count()
+
+        if q:
+            context['clients'] = Client.objects.filter(account=account, name__icontains=q)
+            context['contacts'] = Contact.objects.filter(account=account)
+            context['contacts'] = context['contacts'].filter(Q(name__icontains=q) | Q(email__icontains=q))
+        else:
+            context['clients'] = Client.objects.all()
+            context['contacts'] = Contact.objects.all()
+
+        context['clients'] = context['clients'].order_by('name')[:100]
+        context['contacts'] = context['contacts'].order_by('name')[:100]
 
         return context
 

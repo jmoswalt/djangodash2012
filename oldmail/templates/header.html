@@ -23,7 +23,7 @@
           {% if request.user.is_authenticated and request.user.profile.account %}
           <li><a href="{% url account_detail request.user.profile.account.slug %}">Dashboard</a></li>
           <li><a href="{% url search request.user.profile.account.slug %}">Search Clients &amp; Contacts</a></li>
-          <li><a href="{% url account_invite user.profile.account.slug %}">Invite more people</a></li>
+          <li><a href="{% url account_invite user.profile.account.slug %}">Invite More People</a></li>
           {% endif %}
 
         </ul>
