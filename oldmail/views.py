@@ -193,7 +193,7 @@ class MessageView(DetailView):
 
 
 #@login_required
-def authenticate(request, template_name='authenticate.html'):
+def oauth2(request, slug='', template_name='oauth2.html'):
     """
     Authenticate a user with his/her gmail account. 
     The user can grant or denied the access.
@@ -201,6 +201,8 @@ def authenticate(request, template_name='authenticate.html'):
     access_type: online or offline
     approval_prompt: force or auto
     """
+    account = get_object_or_404(Account, slug=slug)
+    
     # construct the url to authenticate
     if not all([hasattr(settings, 'OAUTH2_CLIENT_ID'),
                 hasattr(settings, 'OAUTH2_REDIRECT_URL')]):
@@ -212,12 +214,11 @@ def authenticate(request, template_name='authenticate.html'):
                   'client_id': settings.OAUTH2_CLIENT_ID,
                   'redirect_uri': settings.OAUTH2_REDIRECT_URL,
                   'response_type': 'code',
-                  'state': '',
+                  'state': account.id,
                   'access_type': 'offline',
                   'approval_prompt': 'auto'} 
-        #TODO: assign user to the state param
+
         url = '%s?%s' % (url, urllib.urlencode(params))
-        
         return HttpResponseRedirect(url)
     
     return render_to_response(template_name, {'folder_name': 
@@ -225,7 +226,7 @@ def authenticate(request, template_name='authenticate.html'):
             context_instance=RequestContext(request))
 
 
-def authenticate_callback(request):
+def oauth2_callback(request, template_name='oauth2_callback.html'):
     """
     Handle the response after the auth request gets sent back to the site.
     """
@@ -245,7 +246,12 @@ def authenticate_callback(request):
               'client_secret': settings.OAUTH2_CLIENT_SECRET,
               'redirect_uri': settings.OAUTH2_REDIRECT_URL,
               'grant_type': 'authorization_code'}
-    result = urllib2.urlopen('http://example.com', urllib.urlencode(params))
+    
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    req = urllib2.Request(settings.OAUTH2_TOKEN_URL, 
+                         urllib.urlencode(params),
+                         headers)
+    result = urllib2.urlopen(req)
     content = result.read()
 
     # a successful response is returned as a JSON array
@@ -254,6 +260,9 @@ def authenticate_callback(request):
     expires_in = content_d['expires_in']
     token_type = content_d['token_type']
     refresh_token = content_d['refresh_token']
+    
+    # save to the database
+    
     
 
 #@login_required    
@@ -303,6 +312,9 @@ def get_request_token(request, slug='', template_name='authenticate.html'):
                                        settings.CLIENT_FOLDER_NAME},
             context_instance=RequestContext(request))
     
+
+def oauth_callback(request):
+    pass
 
 
 class ClientDetail(DetailView):
