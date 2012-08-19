@@ -339,7 +339,7 @@ class ProfileChange(UpdateView):
     def render_to_response(self, context, **kwargs):
 
         # if you're not an inny you're outty
-        if self.request.user.pk == self.object.pk:
+        if not self.request.user.pk == self.object.pk:
             self.template_name = '403.html'
             kwargs.update({'status': 403})
 
