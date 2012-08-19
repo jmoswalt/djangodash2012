@@ -1,5 +1,38 @@
 {% extends "base.html" %}
 
+{% block head %}
+{% if account.messages_stats_last30 %}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Date');
+    data.addColumn('number', 'Emails');
+    data.addRows([
+        {% if account.messages_stats_last30|length > 20 %}
+            {% for day in account.messages_stats_last30 %}
+                ['{% cycle day.day|date:"m/d" '' '' %}', {{ day.total }}],
+            {% endfor %}
+        {% elif account.messages_stats_last30|length > 10 %}
+            {% for day in account.messages_stats_last30 %}
+                ['{% cycle day.day|date:"m/d" '' %}', {{ day.total }}],
+            {% endfor %}
+        {% else %}
+            {% for day in account.messages_stats_last30 %}
+                ['{{ day.day|date:"m/d" }}', {{ day.total }}],
+            {% endfor %}
+        {% endif %}
+    ]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('visualization'));
+    chart.draw(data, {lineWidth: 3,pointSize: 8, width: 570, height: 200, colors: ['#5af'], vAxes: [{format:'###'}], legend: {position: 'none'}, title: 'Daily Email Count'});
+  }
+</script>
+{% endif %}
+{% endblock head %}
+
 {% block body %}
 <div class="span12">
     <h1>{{ account.name }}</h1>
@@ -7,7 +40,39 @@
 <div class="span4">
     {% include "account_sidebar.html" %}
 </div>
-<div class="span4">
+<div class="span8">
+    <div class="row">
+        <div class="span2">
+            <h4>Reports</h4>
+            <table class="table table-condensed">
+                <tr>
+                    <td>{{ account.messages|length }} Emails</td>
+                </tr>
+                <tr>
+                    <td>{{ account.contacts|length }} Contacts</td>
+                </tr>
+                <tr>
+                    <td>{{ account.clients|length }} Clients</td>
+                </tr>
+            </table>
+        </div>
+        <div class="span6">
+            <div id="visualization"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Pull right in case reports are long and account members are short -->
+<div class="span4 pull-right">
+    <h4>Clients</h4>
+    <p><a class="btn btn-small btn-success" href="{% url client_add user.profile.account.slug %}">Add a client</a></p>
+    <ul>
+    {% for client in account.clients %}
+        <li><a href="{{ client.get_absolute_url }}">{{ client.name }} ({{ client.messages|length }})</a></li>
+    {% endfor %}
+    </ul>
+</div>
+<div class="span4 pull-right">
     <h4>Contacts</h4>
     <p><a class="btn btn-small btn-success" href="{% url contact_add request.user.profile.account.slug %}">Add a contact</a></p>
     {% if account.unassigned_contacts %}
@@ -22,15 +87,6 @@
     <ul>
     {% for contact in account.assigned_contacts %}
         <li><a href="{{ contact.get_absolute_url }}">{{ contact }} ({{ contact.messages|length }})</a></li>
-    {% endfor %}
-    </ul>
-</div>
-<div class="span4">
-    <h4>Clients</h4>
-    <p><a class="btn btn-small btn-success" href="{% url client_add user.profile.account.slug %}">Add a client</a></p>
-    <ul>
-    {% for client in account.clients %}
-        <li><a href="{{ client.get_absolute_url }}">{{ client.name }} ({{ client.messages|length }})</a></li>
     {% endfor %}
     </ul>
 </div>
