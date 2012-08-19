@@ -219,11 +219,12 @@ class ProfileVerifyView(DetailView):
         profile = get_object_or_404(Profile, user__email=signup_link.email)
         profile.is_verified = True
         profile.save()
-        signup_link.delete()
 
         return profile
 
     def render_to_response(self, context):
+        signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+        signup_link.delete()
         return HttpResponseRedirect(reverse('account_invite', args=[self.get_object().account.slug]))
 
 
