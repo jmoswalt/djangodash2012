@@ -12,6 +12,7 @@ from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
 from django.http import Http404
 from django.template import RequestContext
+from django.core.management import call_command
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
@@ -26,6 +27,13 @@ from oldmail.utils import send_email, random_string
 
 from oldmail.xoauth import get_oauth_signature
 
+
+@login_required
+def get_mail(request, slug):
+    args = [request.user.email]
+    call_command('get_mail', *args)
+    messages.success(request, 'Your mail has been updated.', extra_tags='success')
+    return HttpResponseRedirect(reverse('account_detail', args=[request.user.profile.account.slug]))
 
 @login_required
 def oauth_connect(request, slug, template_name='oauth1.html'):

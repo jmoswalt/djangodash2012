@@ -7,6 +7,8 @@ urlpatterns = patterns('oldmail.views',
     url(r'^invite/$', views.AccountInviteView.as_view(), name="account_invite"),
     url(r'^change/$', views.AccountChangeView.as_view(), name="account_change"),
 
+    url(r'^getmail/$', 'get_mail', name="get_mail"),
+
     url(r'^oauth1/$', 'oauth_connect', name="oauth_connect"),
 
     url(r'^oauth2/$', 'oauth2', name="oauth2"),

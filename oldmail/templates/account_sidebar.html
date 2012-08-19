@@ -23,10 +23,8 @@
                 {% endif %}</td>
             </tr>
         {% endfor %}
-        {% if request.user.profile.is_account_admin %}
-            
-        {% endif %}
         </table>
+        <p><a class="btn btn-primary" href="{% url get_mail account.slug %}">Refresh my mail</a></p>
     </div>
     {% if request.user.profile.is_account_admin %}
     <div>
