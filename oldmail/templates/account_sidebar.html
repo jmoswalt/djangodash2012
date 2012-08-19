@@ -16,15 +16,15 @@
                 {% endif %}
                 <td>{{ profile.user.email }}</td>
                 <td>{% if profile.oauth_token %}<i class="icon-ok"></i>{% else %}
-                    {% if request.user.profile == profile %}
-                    <a href="{% url oauth_connect profile.account.slug %}">Go</a>
-                    {% else %}
-                    <i class="icon-remove"></i>{% endif %}
-                {% endif %}</td>
+                    <i class="icon-remove"></i>{% endif %}</td>
             </tr>
         {% endfor %}
         </table>
+        {% if request.user.profile.oauth_token %}
         <p><a class="btn btn-primary" href="{% url get_mail account.slug %}">Refresh my mail</a></p>
+        {% else %}
+        <p><a class="btn btn-success" href="{% url oauth_connect request.user.profile.account.slug %}">Setup mail sync</a></p>
+        {% endif %}
     </div>
     {% if request.user.profile.is_account_admin %}
     <div>
