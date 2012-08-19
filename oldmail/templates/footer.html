@@ -7,9 +7,7 @@
             {% else %}
             <li><a class="btn btn-success" href="{% url oauth_connect user.profile.account.slug %}">Setup mail sync</a></li>
             {% endif %}
-        {% else %}
-            <li><a href="{% url about %}">About</a></li>
         {% endif %}
-
+        <li class="pull-right"><a href="{% url about %}">About</a></li>
     </ul>
 </div>
