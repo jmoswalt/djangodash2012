@@ -1,5 +1,7 @@
 import urllib
 import urllib2
+import random
+import time
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -20,7 +22,7 @@ from oldmail.models import Account, Client, SignupLink, Profile, Contact, Messag
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
 from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
-
+from oldmail.xoauth import get_oauth_signature
 
 class HomePageView(TemplateView):
     template_name = "home.html"
@@ -191,7 +193,7 @@ class MessageView(DetailView):
 
 
 #@login_required
-def authenticate(request, template_name = 'authenticate.html'):
+def authenticate(request, template_name='authenticate.html'):
     """
     Authenticate a user with his/her gmail account. 
     The user can grant or denied the access.
@@ -252,6 +254,53 @@ def authenticate_callback(request):
     expires_in = content_d['expires_in']
     token_type = content_d['token_type']
     refresh_token = content_d['refresh_token']
+    
+
+#@login_required    
+def get_request_token(request, template_name='authenticate.html'):
+    """
+    Get the request token. Redirect user to google 
+    to authorize their account. 
+
+    """
+    if not all([hasattr(settings, 'OAUTH_CONSUMER_KEY'),
+                hasattr(settings, 'OAUTH_CONSUMER_SECRET')]):
+        raise Http404
+    
+    # construct the url to authenticate
+    if request.method == "POST":
+        url = settings.OAUTH2_ENDPOINT
+        email = request.user.email         
+        params = {'oauth_consumer_key': settings.OAUTH_CONSUMER_KEY,
+                  'oauth_nonce': str(random.randrange(2**64 - 1)),
+                  'oauth_signature_method': 'HMAC-SHA1',
+                  'oauth_signature': '',
+                  'oauth_timestamp': str(int(time.time())),
+                  'scope': settings.OAUTH_SCOPE,
+                  'oauth_callback': settings.OAUTH_REDIRECT_URL,
+                  'oauth_version': '1.0'}
+        
+        params['oauth_signature'] = get_oauth_signature(
+                                            params['scope'],
+                                            params['oauth_nonce'],
+                                            params['oauth_timestamp'],
+                                            email)
+        #body = urllib.urlencode({'scope': settings.OAUTH_SCOPE})
+        url = '%s?%s' % (url, urllib.urlencode(params))
+         
+        
+        response = HttpResponseRedirect(url)
+        
+        response['Content-Type'] = 'application/x-www-form-urlencoded'
+        response['Authorization'] = 'OAuth'
+
+        return response
+        
+    
+    return render_to_response(template_name, {'folder_name': 
+                                       settings.CLIENT_FOLDER_NAME},
+            context_instance=RequestContext(request))
+    
 
 
 class ClientDetail(DetailView):
