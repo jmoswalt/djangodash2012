@@ -1,11 +1,58 @@
 {% extends "base.html" %}
 
+{% block title %}Group Email Archive Sharing - Old Mail (Djangodash 2012){% endblock %}
+
 {% block head %}
 <meta name="google-site-verification" content="9hNP61ROiyxzjjolw68Y0mEPk-iE5BZK96RI6fUvaBU" />
 {% endblock head %}
 
+{% block css %}
+<style type="text/css">
+.hero-unit { padding-top: 30px; }
+</style>
+{% endblock css %}
+
 {% block body %}
-<div class="span12">
-    <h1>Home</h1>
+<div class="span9">
+      <div class="hero-unit">
+        <h1>Share Group Email</h1>
+        <h4>Share and archive email with your team to stay on top of things.</h4>
+        <p>
+        {% if request.user.is_authenticated %}
+        <a href="{% url account_detail request.user.profile.account.slug %}" class="btn btn-primary large">Go to My Account &raquo;</a>
+        {% else %}
+        <a href="{% url signup %}" class="btn btn-success large">Signup Now &raquo;</a>
+        {% endif %}</p>
+        <p>OldMail acts as a shared resource for the emails you choose to share.</p>
+        <p>Stay on top of communication with Clients, Vendors, Sales Prospects, and anyone else outside of your origanization with Old Mail.</p>
+      </div>
 </div>
+<div class="span3">
+    <h2>About OldMail</h2>
+    <p>OldMail archives your email from a special folder (or label in Gmail). When you label something with the label <strong>@oldmail</strong>, those emails are regularly collected to be shared with your team.</p>
+    <p>This is our solution to replacing the Public Folders we used to have in MS Exchange.</p>
+    <p>This project was created by <a href="https://github.com/eloyz">Eloy</a>, <a href="https://github.com/jennyq">Jenny</a>, and <a href="https://github.com/jmoswalt">JMO</a> for the <a href="http://djangodash.com/">2012 Djangodash</a>. We work together for <a href="http://schipul.com/">Schipul</a>. We build <a href="http://tendenci.com/">Tendenci</a>, an open source CMS for non-profits built on Django.</p>
+</div>
+</div><!-- Close row wrap -->
+<div class="row"><!-- Open new row wrap to be closed by body -->
+    <div class="span3">
+        <h3>Share</h3>
+        <p>Let Mike in accounting or Sharon in production know what's going on without having to forward every email from Client ABC.</p>
+        <p>Simply invite them to join you here at OldMail and start archiving and sharing.</p>
+    </div>
+    <div class="span3">
+        <h3>Organize</h3>
+        <p>Once your mail has been collected, you can group those mail's contacts into client groups.</p>
+        <p>Rename contacts, change clients, and find the archived messages you are looking for quickly and easily.</p>
+    </div>
+    <div class="span3">
+        <h3>Search</h3>
+        <p>Whether it's for a specific contact or a specific client, your can quickly find the emails your need.</p>
+        <p>Search is built in to OldMail to make sure you get the right info at the right moment.</p>
+    </div>
+    <div class="span3">
+        <h3>Anywhere</h3>
+        <p>OldMail works with your current email application. You can send mail to OldMail from your tablet or mobile device.</p>
+        <p>You can also view OldMail archives from those devices in a mobile-ready interface.</p>
+    </div>
 {% endblock body %}
