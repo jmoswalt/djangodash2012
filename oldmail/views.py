@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
@@ -261,14 +261,14 @@ class ClientDetail(DetailView):
     def get_success_url(self):
         return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context, **kwargs):
 
         context.update({
             'edit_link': reverse('client_change', \
                 args=[self.request.user.profile.account.slug, self.object.pk])
         })
 
-        return super(ClientDetail, self).render_to_response(context, **response_kwargs)
+        return super(ClientDetail, self).render_to_response(context, **kwargs)
 
 
 class ClientCreate(CreateView):
@@ -335,3 +335,11 @@ class ProfileChange(UpdateView):
 
     def get_success_url(self):
         return lazy_reverse('profile_list', self.request.user.profile.account.slug)
+
+    def render_to_response(self, context, **kwargs):
+
+        # if you're not an inny you're outty
+        if not self.request.user.pk == self.object.pk:
+            self.template_name = '403.html'
+
+        return super(ProfileChange, self).render_to_response(context, **kwargs)
