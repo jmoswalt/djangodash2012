@@ -1,9 +1,14 @@
 <div class="span12">
     <ul class="breadcrumb center">
-        <li><a href="{% url about %}">About</a></li>
 
-        {% if user.is_authenticated and user.profile.account %}
-        <li class="pull-right"><a href="{% url profile_change user.profile.account.slug user.pk %}">{{ request.user.username }}</a></li>
+        {% if user.is_authenticated %}
+            {% if request.user.profile.oauth_token %}
+            <li><a class="btn btn-primary" href="{% url get_mail user.profile.account.slug %}">Refresh my mail</a></li>
+            {% else %}
+            <li><a class="btn btn-success" href="{% url oauth_connect user.profile.account.slug %}">Setup mail sync</a></li>
+            {% endif %}
+        {% else %}
+            <li><a href="{% url about %}">About</a></li>
         {% endif %}
 
     </ul>

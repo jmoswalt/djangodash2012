@@ -22,6 +22,8 @@
 
           {% if request.user.is_authenticated and request.user.profile.account %}
           <li><a href="{% url account_detail request.user.profile.account.slug %}">Dashboard</a></li>
+          <li><a href="{% url search request.user.profile.account.slug %}">Search Clients &amp; Contacts</a></li>
+          <li><a href="{% url account_invite user.profile.account.slug %}">Invite more people</a></li>
           {% endif %}
 
         </ul>
@@ -29,6 +31,8 @@
           {% if not request.user.is_authenticated %}
           <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
           {% else %}
+          <li><a href="{% url account_change user.profile.account.slug %}">My Account</a></li>
+          <li><a href="{% url profile_change user.profile.account.slug user.pk %}">My Profile</a></li>
           <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
           {% endif %}
         </ul>
