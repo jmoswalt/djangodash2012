@@ -23,7 +23,7 @@ from django.db.models import Q
 
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
-from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
+from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm, ContactChangeForm
 from oldmail.utils import send_email, random_string
 
 from oldmail.xoauth import get_oauth_signature
@@ -406,6 +406,7 @@ class ClientChange(LoginRequiredMixin, UpdateView):
 class ContactCreate(LoginRequiredMixin, CreateView):
     model = Contact
     template_name = 'contact_form.html'
+    form_class = ContactChangeForm
 
     def post(self, request, *args, **kwargs):
         self.account = request.user.profile.account
@@ -432,6 +433,7 @@ class ContactList(LoginRequiredMixin, ListView):
 class ContactChange(LoginRequiredMixin, UpdateView):
     model = Contact
     template_name = 'contact_form.html'
+    form_class = ContactChangeForm
 
     def form_valid(self, form):
         self.object = form.save()

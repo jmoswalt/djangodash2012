@@ -28,7 +28,11 @@ $(document).ready(function() {
     $("#id_client").addClass('chzn-select');
     $(".chzn-select").chosen();
     $("#new-client").hide();
-    $('.control-group:first .help-inline').html($("#new-client").html());
+    var client_field = $('#id_client');
+    if (client_field.is('*')) {
+        console.log(client_field);
+        $('.control-group:first .help-inline').html($("#new-client").html());
+    }
 });
 </script>
 {% endblock js %}

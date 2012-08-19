@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
-from oldmail.models import Account, Profile, SignupLink
+from oldmail.models import Account, Profile, SignupLink, Contact, Client
 from oldmail.utils import send_email, random_string
 
 
@@ -195,3 +195,22 @@ class ProfileChangeForm(forms.ModelForm):
             self.instance.set_password(password)
 
         return self.instance.password
+
+
+class ContactChangeForm(forms.ModelForm):
+
+    class Meta:
+        model = Contact
+
+        fields = (
+            'client',
+            'name',
+            'email',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(ContactChangeForm, self).__init__(*args, **kwargs)
+        if self.instance.account_id:
+            self.fields['client'].queryset = Client.objects.filter(account=self.instance.account)
+        else:
+            self.fields.pop('client')
