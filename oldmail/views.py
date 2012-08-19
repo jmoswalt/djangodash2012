@@ -51,9 +51,8 @@ def oauth_connect(request, slug, template_name='oauth1.html'):
 
     profile = get_object_or_404(Profile, user=request.user)
 
-    if request.method == "POST" and request_token:
-        print 'POST'
-        oauth_verifier = request.POST['oauth_verifier']
+    if 'oauth_verifier' in request.GET and request_token:
+        oauth_verifier = request.GET['oauth_verifier']
         oauth_token, oauth_token_secret = GetAccessToken(consumer, request_token, oauth_verifier, google_accounts_url_generator)
         profile.oauth_token = oauth_token
         profile.oauth_token_secret = oauth_token_secret
@@ -66,9 +65,10 @@ def oauth_connect(request, slug, template_name='oauth1.html'):
         return HttpResponseRedirect(reverse('account_detail', args=[profile.account.slug]))
 
     else:
+        site_callback_url = "%s%s" % (settings.SITE_URL, reverse('oauth_connect', args=[profile.account.slug]))
         token, request_token_url = GenerateRequestToken(consumer, scope, nonce,
                                          timestamp,
-                                         google_accounts_url_generator)
+                                         google_accounts_url_generator, site_callback_url)
 
         request.session['generated_token'] = token
 

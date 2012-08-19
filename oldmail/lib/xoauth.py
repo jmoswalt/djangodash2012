@@ -246,7 +246,7 @@ def FillInCommonOauthParams(params, consumer, nonce=None, timestamp=None):
 
 
 def GenerateRequestToken(consumer, scope, nonce, timestamp,
-                         google_accounts_url_generator):
+                         google_accounts_url_generator, callback='oob'):
   """Generates an OAuth request token by talking to Google Accounts.
 
   Args:
@@ -264,7 +264,7 @@ def GenerateRequestToken(consumer, scope, nonce, timestamp,
   """
   params = {}
   FillInCommonOauthParams(params, consumer, nonce, timestamp)
-  params['oauth_callback'] = 'oob'
+  params['oauth_callback'] = callback
   params['scope'] = scope
   request_url = google_accounts_url_generator.GetRequestTokenUrl()
   token = OAuthEntity(None, '')
