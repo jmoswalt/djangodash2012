@@ -35,7 +35,7 @@ def oauth_connect(request, slug, template_name='oauth1.html'):
     scope = 'https://mail.google.com/'
     nonce = str(random.randrange(2 ** 64 - 1))
     timestamp = str(int(time.time()))
-    consumer = OAuthEntity(settings.OAUTH2_CONSUMER_KEY, settings.OAUTH2_CONSUMER_SECRET)
+    consumer = OAuthEntity(settings.OAUTH_CONSUMER_KEY, settings.OAUTH_CONSUMER_SECRET)
     google_accounts_url_generator = GoogleAccountsUrlGenerator(request.user.email)
 
     request_token = request.session.get('generated_token', None)
@@ -49,6 +49,8 @@ def oauth_connect(request, slug, template_name='oauth1.html'):
         profile.oauth_token = oauth_token
         profile.oauth_token_secret = oauth_token_secret
         profile.save()
+
+        request.session['generated_token'] = None
 
         messages.success(request, 'Your account has been authorized to sync.', extra_tags='success')
 
@@ -66,7 +68,7 @@ def oauth_connect(request, slug, template_name='oauth1.html'):
 
 
 #@login_required
-def authenticate(request, slug, template_name='authenticate.html'):
+def oauth2(request, slug, template_name='authenticate.html'):
     """
     Authenticate a user with his/her gmail account.
     The user can grant or denied the access.
@@ -97,7 +99,7 @@ def authenticate(request, slug, template_name='authenticate.html'):
             context_instance=RequestContext(request))
 
 
-def authenticate_callback(request):
+def oauth2_callback(request):
     """
     Handle the response after the auth request gets sent back to the site.
     """

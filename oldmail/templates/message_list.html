@@ -5,7 +5,7 @@
 
 <div class="span12">
     <h1>Messages for {% if client %}{{ client.name }} <small>Client</small>
-    {% elif contact %}{{ contact.name }} <small>Contact</small>{% endif %} <span class="pull-right">
+    {% elif contact %}{{ contact }} <small>Contact</small>{% endif %} <span class="pull-right">
         {% if client %}<a class="btn btn-primary" href="{{ client.get_change_url }}">Edit Client</a>
         {% elif contact %}
         <a class="btn btn-primary" href="{{ contact.get_change_url }}">Edit Contact</a>
