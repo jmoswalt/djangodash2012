@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def get_contact(self, to_email_addr, from_email_addr, profile):
         c = None
         # First we check if the to address is the client.
-        to_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", to_email_addr).split(',')[0]
+        to_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", to_email_addr).split(',')[0].lower()
         to_name = ''
         if "<" in to_email_addr:
             to_name = to_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 return c
 
         # now we check the from
-        from_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", from_email_addr).split(',')[0]
+        from_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", from_email_addr).split(',')[0].lower()
         from_name = ''
         if "<" in from_email_addr:
             from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
