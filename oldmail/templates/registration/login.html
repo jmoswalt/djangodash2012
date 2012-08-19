@@ -9,9 +9,9 @@
     <h1>Sorry, but you can't go here.</h1>
 </div>
 {% else %}
-<div class="span3 offset4 well">
+<div class="span5 offset4 well">
     <h2>Login to Oldmail</h2>
-    <form class="form-vertical" method="post" action="">{% csrf_token %}
+    <form class="form-horizontal" method="post" action="">{% csrf_token %}
         {{ form.errors }}
         {% bootstrap_form form %}
         <div class="form-actions">

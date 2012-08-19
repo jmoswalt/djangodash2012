@@ -1,6 +1,10 @@
+from datetime import timedelta
+
 from django.db import models
+from django.db.models import Count
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 
 from oldmail.lib.gmail_imap import gmail_imap
 
@@ -23,6 +27,19 @@ class Account(models.Model):
 
     def contacts(self):
         return self.contact_set.all()
+
+    def messages(self):
+        profiles = self.profiles()
+        profiles_pks = [i.pk for i in profiles]
+        messages = Message.objects.filter(profile_id__in=profiles_pks)
+        return messages
+
+    def messages_stats_last30(self):
+        timeago = timezone.now() - timedelta(days=30)
+        messages = self.messages()
+        messages = messages.filter(m_date__gte=timeago).extra(select={'day': 'date( m_date )'}).values('day').order_by('day') \
+               .annotate(total=Count('m_date'))
+        return messages
 
     def unassigned_contacts(self):
         return self.contact_set.filter(client__isnull=True)
