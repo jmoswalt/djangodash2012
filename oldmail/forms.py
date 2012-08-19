@@ -71,8 +71,7 @@ class AccountInviteForm(forms.ModelForm):
                     message,
                     [email]
                     )
-            else:
-                print "failed to validate", email
+
         return a
 
 
