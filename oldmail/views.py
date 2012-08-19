@@ -7,7 +7,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login, authenticate as dj_auth
 from django.contrib.auth.models import User
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
 from django.http import Http404
@@ -22,7 +24,6 @@ from django.db.models import Q
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
-from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
 
 from oldmail.xoauth import get_oauth_signature
@@ -119,10 +120,6 @@ class AccountAdd(FormView):
 class AccountListView(LoginRequiredMixin, ListView):
     model = Account
     template_name = "account_list.html"
-
-    @method_decorator(staff_or_super_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountListView, self).dispatch(*args, **kwargs)
 
 
 class AccountInviteView(LoginRequiredMixin, UpdateView):
@@ -238,16 +235,12 @@ class MessageView(LoginRequiredMixin, DetailView):
         return obj
 
 
-class ContactMessageList(ListView):
+class ContactMessageList(LoginRequiredMixin, ListView):
     """
     A list of messages filtered for a specific Contact
     """
     model = Message
     template_name = "message_list.html"
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ContactMessageList, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ContactMessageList, self).get_context_data(**kwargs)
@@ -265,7 +258,7 @@ class ContactMessageList(ListView):
                 raise Http404
 
         qs = Message.objects.filter(contact=contact)
-        
+
         if "q" in self.request.GET:
             q = self.request.GET['q']
             print q
@@ -276,68 +269,60 @@ class ContactMessageList(ListView):
         return qs
 
 
-#@login_required    
+#@login_required
 def get_request_token(request, slug='', template_name='authenticate.html'):
     """
-    Get the request token. Redirect user to google 
-    to authorize their account. 
-    
+    Get the request token. Redirect user to google
+    to authorize their account.
     docs:
     https://developers.google.com/accounts/docs/OAuth_ref#RequestToken
     """
-    account = get_object_or_404(Account, slug=slug)
+    #account = get_object_or_404(Account, slug=slug)
     #email = account.profile.user.email
-    
+
     if not all([hasattr(settings, 'OAUTH_CONSUMER_KEY'),
                 hasattr(settings, 'OAUTH_CONSUMER_SECRET')]):
         raise Http404
-    
+
     # construct the url to authenticate
     if request.method == "POST":
         url = settings.OAUTH_REQUEST_TOKEN_URL
         params = {'oauth_consumer_key': settings.OAUTH_CONSUMER_KEY,
-                  'oauth_nonce': str(random.randrange(2**64 - 1)),
+                  'oauth_nonce': str(random.randrange(2 ** 64 - 1)),
                   'oauth_signature_method': 'HMAC-SHA1',
                   'oauth_timestamp': str(int(time.time())),
                   'scope': settings.OAUTH_SCOPE,
                   'oauth_callback': settings.OAUTH_REDIRECT_URL,
                   'oauth_version': '1.0',
                   'xoauth_displayname': slug}
-        
+
         params['oauth_signature'] = get_oauth_signature(
                                             params,
                                             url)
         #body = urllib.urlencode({'scope': settings.OAUTH_SCOPE})
         url = '%s?%s' % (url, urllib.urlencode(params))
-         
-        
+
         response = HttpResponseRedirect(url)
-        
+
         response['Content-Type'] = 'application/x-www-form-urlencoded'
         response['Authorization'] = 'OAuth'
 
         return response
-        
-    
-    return render_to_response(template_name, {'folder_name': 
-                                       settings.CLIENT_FOLDER_NAME},
-            context_instance=RequestContext(request))
-    
+
+    return render_to_response(template_name, {'folder_name':
+        settings.CLIENT_FOLDER_NAME}, context_instance=RequestContext(request))
+
 
 def oauth_callback(request):
     pass
-        
 
-class ClientMessageList(ListView):
+
+class ClientMessageList(LoginRequiredMixin, ListView):
     """
     A list of messages filtered for a specific Client
     """
     model = Message
     template_name = "message_list.html"
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ClientMessageList, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ClientMessageList, self).get_context_data(**kwargs)
@@ -482,23 +467,36 @@ class ProfileChange(LoginRequiredMixin, UpdateView):
             kwargs.update({'status': 403})
 
         return super(ProfileChange, self).render_to_response(context, **kwargs)
-    
+
+
+class SearchView(LoginRequiredMixin, TemplateView):
+    template_name = 'search.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchView, self).get_context_data(**kwargs)
+
+        context['clients'] = Client.objects.all()
+        context['contacts'] = Contact.objects.all()
+
+        return context
+
+
 #@login_required
 def oauth2(request, slug='', template_name='oauth2.html'):
     """
-    Let user authorize his/her gmail account. 
+    Let user authorize his/her gmail account.
     The user can grant or denied the access.
-    
+
     access_type: online or offline
     approval_prompt: force or auto
     """
     account = get_object_or_404(Account, slug=slug)
-    
+
     # construct the url to authenticate
     if not all([hasattr(settings, 'OAUTH2_CLIENT_ID'),
                 hasattr(settings, 'OAUTH2_REDIRECT_URL')]):
         raise Http404
-    
+
     if request.method == "POST":
         url = settings.OAUTH2_ENDPOINT
         params = {'scope': settings.OAUTH2_SCOPE,
@@ -507,14 +505,13 @@ def oauth2(request, slug='', template_name='oauth2.html'):
                   'response_type': 'code',
                   'state': account.id,
                   'access_type': 'offline',
-                  'approval_prompt': 'auto'} 
+                  'approval_prompt': 'auto'}
 
         url = '%s?%s' % (url, urllib.urlencode(params))
         return HttpResponseRedirect(url)
-    
-    return render_to_response(template_name, {'folder_name': 
-                                       settings.CLIENT_FOLDER_NAME},
-            context_instance=RequestContext(request))
+
+    return render_to_response(template_name, {'folder_name':
+        settings.CLIENT_FOLDER_NAME}, context_instance=RequestContext(request))
 
 
 def oauth2_callback(request, template_name='oauth2_callback.html'):
@@ -529,7 +526,7 @@ def oauth2_callback(request, template_name='oauth2_callback.html'):
         return HttpResponseRedirect(reverse('authenticate'))
 
     code = request.GET.get('code', '')
-    state = request.GET.get('state', '')
+    # state = request.GET.get('state', '')
 
     # exachange the authorization code for an access token and a refresh token
     params = {'code': code,
@@ -537,9 +534,9 @@ def oauth2_callback(request, template_name='oauth2_callback.html'):
               'client_secret': settings.OAUTH2_CLIENT_SECRET,
               'redirect_uri': settings.OAUTH2_REDIRECT_URL,
               'grant_type': 'authorization_code'}
-    
+
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    req = urllib2.Request(settings.OAUTH2_TOKEN_URL, 
+    req = urllib2.Request(settings.OAUTH2_TOKEN_URL,
                          urllib.urlencode(params),
                          headers)
     result = urllib2.urlopen(req)
@@ -551,6 +548,7 @@ def oauth2_callback(request, template_name='oauth2_callback.html'):
     expires_in = content_d['expires_in']
     token_type = content_d['token_type']
     refresh_token = content_d['refresh_token']
-    
+
     # save to the database
+
 

@@ -14,6 +14,9 @@ urlpatterns = patterns('oldmail.views',
     url(r'^oauth2/$', 'oauth2', name="oauth2"),
     url(r'^oauth2callback/$', 'oauth2_callback', name="oauth2_callback"),
 
+    url(r'^oauth/$', 'get_request_token', name="get_request_token"),
+    url(r'^oauthcallback/$', 'oauth_callback', name="oauth_callback"),
+
     url(r'^profile/activate/(?P<random_string>[\w]+)/$', views.ProfileAddView.as_view(), name="profile_activate"),
     url(r'^profile/verify/(?P<random_string>[\w]+)/$', views.ProfileVerifyView.as_view(), name="profile_verify"),
     url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
@@ -31,4 +34,6 @@ urlpatterns = patterns('oldmail.views',
     url(r'^contact/(?P<pk>\d+)/$', views.ContactMessageList.as_view(), name="contact_message_list"),
 
     url(r'^message/(?P<pk>\d+)/$', views.MessageView.as_view(), name="message_detail"),
+
+    url(r'^search/$', views.SearchView.as_view(), name="search"),
 )

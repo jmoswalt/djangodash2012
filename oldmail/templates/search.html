@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="span12">
+        <h1>Search for clients and contacts</h1>
+    </div>
+
+    <div class="span6">
+        <h2>Clients {{ clients|length }}</h2>
+    </div>
+
+    <div class="span6">
+        <h2>Contacts {{ contacts|length }}</h2>
+    </div>
+
+{% endblock body %}
