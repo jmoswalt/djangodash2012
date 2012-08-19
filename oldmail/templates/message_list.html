@@ -12,9 +12,13 @@
     {% if contact.name %}
         <h4>{{ contact.email }}</h4>
     {% endif %}
+    <p><strong>Client:</strong> 
     {% if contact.client %}
-        <p><strong>Client:</strong> <a href="{{ contact.client.get_absolute_url }}">{{ contact.client }}</a></p>
+        <a href="{{ contact.client.get_absolute_url }}">{{ contact.client }}</a>
+    {% else %}
+        <a href="{{ contact.client.get_absolute_url }}">Pick a Client (dropdown?)</a>
     {% endif %}
+    </p>
 {% endif %}
 
 {% if client %}

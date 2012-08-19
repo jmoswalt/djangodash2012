@@ -23,7 +23,6 @@ urlpatterns = patterns('oldmail.views',
     url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
     url(r'^profile/change/(?P<pk>\d+)/$', views.ProfileChange.as_view(), name="profile_change"),
 
-    # url(r'contact/$', 'contact_detail', name="contact_detail"),
     url(r'^contact/add/$', views.ContactCreate.as_view(), name="contact_add"),
     url(r'^contact/list/$', views.ContactList.as_view(), name="contact_list"),
     url(r'^contact/change/(?P<pk>\d+)/$', views.ContactChange.as_view(), name="contact_change"),
