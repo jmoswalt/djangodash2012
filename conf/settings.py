@@ -195,6 +195,9 @@ OAUTH2_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth'
 
 CLIENT_FOLDER_NAME = env('CLIENT_FOLDER_NAME', 'clients')
 
+OAUTH_REQUEST_TOKEN_URL = 'https://www.google.com/accounts/OAuthGetRequestToken'
+OAUTH_AUTHORIZETOKENURL = 'https://www.google.com/accounts/OAuthAuthorizeToken'
+OAUTH_ACCESS_TOKEN_URL = 'https://www.google.com/accounts/OAuthGetAccessToken'
 OAUTH_SCOPE = 'https://mail.google.com/mail/feed/atom'
 OAUTH_REDIRECT_URL = 'http://oldmail.herokuapp.com/oauth2callback'
 OAUTH_CONSUMER_KEY = env('OAUTH_CONSUMER_KEY', '')

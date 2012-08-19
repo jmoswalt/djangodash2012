@@ -257,34 +257,36 @@ def authenticate_callback(request):
     
 
 #@login_required    
-def get_request_token(request, template_name='authenticate.html'):
+def get_request_token(request, slug='', template_name='authenticate.html'):
     """
     Get the request token. Redirect user to google 
     to authorize their account. 
-
+    
+    docs:
+    https://developers.google.com/accounts/docs/OAuth_ref#RequestToken
     """
+    account = get_object_or_404(Account, slug=slug)
+    #email = account.profile.user.email
+    
     if not all([hasattr(settings, 'OAUTH_CONSUMER_KEY'),
                 hasattr(settings, 'OAUTH_CONSUMER_SECRET')]):
         raise Http404
     
     # construct the url to authenticate
     if request.method == "POST":
-        url = settings.OAUTH2_ENDPOINT
-        email = request.user.email         
+        url = settings.OAUTH_REQUEST_TOKEN_URL
         params = {'oauth_consumer_key': settings.OAUTH_CONSUMER_KEY,
                   'oauth_nonce': str(random.randrange(2**64 - 1)),
                   'oauth_signature_method': 'HMAC-SHA1',
-                  'oauth_signature': '',
                   'oauth_timestamp': str(int(time.time())),
                   'scope': settings.OAUTH_SCOPE,
                   'oauth_callback': settings.OAUTH_REDIRECT_URL,
-                  'oauth_version': '1.0'}
+                  'oauth_version': '1.0',
+                  'xoauth_displayname': slug}
         
         params['oauth_signature'] = get_oauth_signature(
-                                            params['scope'],
-                                            params['oauth_nonce'],
-                                            params['oauth_timestamp'],
-                                            email)
+                                            params,
+                                            url)
         #body = urllib.urlencode({'scope': settings.OAUTH_SCOPE})
         url = '%s?%s' % (url, urllib.urlencode(params))
          

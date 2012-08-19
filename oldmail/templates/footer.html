@@ -8,7 +8,7 @@
   {% endif %}
 
   {% if request.user.is_authenticated %}
-  <li class="pull-right"><a href="{% url profile_change user.profile.account user.pk %}">{{ request.user.username }}</a></li>
+  <li class="pull-right"><a href="{# url profile_change user.profile.account user.pk #}">{{ request.user.username }}</a></li>
   {% endif %}
   <li class="pull-right"><a href="#">Copyright stuff</a> <span class="divider">|</span> </li>
 

@@ -36,17 +36,12 @@ def FormatUrlParams(params):
 def EscapeAndJoin(elems):
     return '&'.join([UrlEscape(x) for x in elems])
 
-def get_oauth_signature(scope, nonce, timestamp, email):
+def get_oauth_signature(params, url):
     """Generates the oauth signature.
     """
-    params = {}
     consumer = OAuthEntity(settings.OAUTH_CONSUMER_KEY,
                            settings.OAUTH_CONSUMER_SECRET)
-    google_accounts_url_generator = GoogleAccountsUrlGenerator(email)
-    FillInCommonOauthParams(params, consumer, nonce, timestamp)
-    params['oauth_callback'] = 'oob'
-    params['scope'] = scope
-    request_url = google_accounts_url_generator.GetRequestTokenUrl()
+    request_url = url
     token = OAuthEntity(None, '')
     base_string = GenerateSignatureBaseString('GET', request_url, params)
     
