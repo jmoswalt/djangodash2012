@@ -3,12 +3,13 @@
 {% block title %}Setup OldMail Sync{% endblock title %}
 
 {% block body %}
-<div class="span12">
+<div class="span5 offset3 well">
     <h1>Set Up and Authorize</h1>
     <ol>
-        <li>Step 1: Create a label "{{ folder_name }}" in your gmail account for <strong>{{ email_address }}</strong>.</li>
-        <li>Step 2: Click the link below to approve access to your "{{ folder_name}}".</li>
+        <li>Create a label "{{ folder_name }}" in your gmail account <strong>{{ email_address }}</strong>.</li>
+        <li>Click the link below to approve access to your "{{ folder_name}}".</li>
     </ol>
-    <p><a href="{{ token_url }}" class="btn btn-success">Authorize</a></p>
+    <p style="text-align: center;">
+    <a href="{{ token_url }}" class="btn btn-success">Authorize</a></p>
 </div>
 {% endblock body %}
