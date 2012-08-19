@@ -114,7 +114,7 @@ class AccountView(LoginRequiredMixin, DetailView):
         return obj
 
 
-class AccountAdd(LoginRequiredMixin, FormView):
+class AccountAdd(FormView):
     template_name = 'account_create.html'
     form_class = AccountAddForm
 
