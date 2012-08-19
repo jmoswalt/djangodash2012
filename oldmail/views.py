@@ -492,8 +492,8 @@ class SearchView(LoginRequiredMixin, TemplateView):
             context['contacts'] = Contact.objects.filter(account=account)
             context['contacts'] = context['contacts'].filter(Q(name__icontains=q) | Q(email__icontains=q))
         else:
-            context['clients'] = Client.objects.all()
-            context['contacts'] = Contact.objects.all()
+            context['clients'] = Client.objects.filter(account=account)
+            context['contacts'] = Contact.objects.filter(account=account)
 
         context['clients'] = context['clients'].order_by('name')[:100]
         context['contacts'] = context['contacts'].order_by('name')[:100]
