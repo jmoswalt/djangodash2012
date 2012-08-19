@@ -30,6 +30,11 @@ from oldmail.xoauth import get_oauth_signature
 
 
 @login_required
+def dashboard_redirect(request):
+    return HttpResponseRedirect(reverse('account_detail', args=[request.user.profile.account.slug]))
+
+
+@login_required
 def get_mail(request, slug):
     args = [request.user.email]
     call_command('get_mail', *args)
