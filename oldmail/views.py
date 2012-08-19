@@ -197,7 +197,6 @@ class ProfileAddView(FormView):
         initial = super(ProfileAddView, self).get_initial()
         signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
         initial['account'] = signup_link.account_id
-        print signup_link.email
         initial['email'] = signup_link.email
         return initial
 
@@ -205,6 +204,8 @@ class ProfileAddView(FormView):
         profile = form.add_profile()
         user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
         login(self.request, user)
+        signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+        signup_link.delete()
         messages.success(self.request, 'Your profile for %s has been created. You are now logged in.' % profile.account.name, extra_tags='success')
         return HttpResponseRedirect(reverse('account_detail', args=[profile.account.slug]))
 
@@ -218,6 +219,7 @@ class ProfileVerifyView(DetailView):
         profile = get_object_or_404(Profile, user__email=signup_link.email)
         profile.is_verified = True
         profile.save()
+        signup_link.delete()
 
         return profile
 
