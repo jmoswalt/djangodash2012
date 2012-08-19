@@ -8,8 +8,8 @@
 {% endblock css %}
 
 {% block body %}
-<div class="row">
-    <div class="span5 offset4">
+    <div class="span5 offset3 well">
+        <h2>{% if contact %}Update Contact {% else %}Add a Contact{% endif %}</h2>
         <form class="form-horizontal" action="" method="POST">
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -19,7 +19,6 @@
         </form>
         <span id="new-client"><a href="{% url client_add request.user.profile.account.slug %}?next={{ request.path }}">Add a new Client first?</a></span>
     </div>
-</div>
 {% endblock body %}
 
 {% block js %}

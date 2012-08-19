@@ -4,9 +4,8 @@
 {% block title %}Add a client{% endblock title %}
 
 {% block body %}
-<div class="row">
-    <div class="span5 offset4">
-        <h2>Add a Client</h2>
+    <div class="span5 offset3 well">
+        <h2>{% if client %}Update Client {% else %}Add a Client{% endif %}</h2>
         <form class="form-horizontal" action="" method="POST">
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -15,5 +14,4 @@
             </div>
         </form>
     </div>
-</div>
 {% endblock body %}

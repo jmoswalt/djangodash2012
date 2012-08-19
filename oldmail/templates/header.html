@@ -1,37 +1,36 @@
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+ 
+      <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+ 
+      <!-- Be sure to leave the brand out there if you want it shown -->
+      <a class="brand" href="{% url homepage %}">Old Mail</a>
+ 
+      <!-- Everything you want hidden at 940px or less, place within here -->
+      <div class="nav-collapse">
+        <ul class="nav">
+          {% if not request.user.is_authenticated %}
+          <li><a href="{% url signup %}">Signup</a></li>
+          <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
+          {% else %}
 
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-     
-          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-     
-          <!-- Be sure to leave the brand out there if you want it shown -->
-          <a class="brand" href="{% url homepage %}">Old Mail</a>
-     
-          <!-- Everything you want hidden at 940px or less, place within here -->
-          <div class="nav-collapse">
-            <ul class="nav">
-              {% if not request.user.is_authenticated %}
-              <li><a href="{% url signup %}">Signup</a></li>
-              <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
-              {% else %}
+          {% if request.user.is_authenticated and request.user.profile.account %}
+          <li><a href="{% url account_detail request.user.profile.account.slug %}">Account: {{ request.user.profile.account.name }}</a></li>
+          {% endif %}
 
-              {% if request.user.is_authenticated and request.user.profile.account %}
-              <li><a href="{% url account_detail request.user.profile.account.slug %}">Account: {{ request.user.profile.account.name }}</a></li>
-              {% endif %}
-
-            </ul>
-            <ul class="nav pull-right">
-              <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
-              {% endif %}
-            </ul>
-          </div>
-     
-        </div>
+        </ul>
+        <ul class="nav pull-right">
+          <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+          {% endif %}
+        </ul>
       </div>
+ 
     </div>
+  </div>
+</div>

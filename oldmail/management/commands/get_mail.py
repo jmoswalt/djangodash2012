@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     Needs 1 arg, the email address for the associated profile
     """
-    def get_client(self, to_email_addr, from_email_addr, profile):
+    def get_contact(self, to_email_addr, from_email_addr, profile):
         c = None
         # First we check if the to address is the client.
         to_email = re.sub("(.*)<([\\w\\.\\@]+)>", "\\2", to_email_addr).split(',')[0]
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         # make sure the address is not the sender
         if to_email != profile.user.email:
             try:
-                c = Contact.objects.get(email=to_email, name=to_name, account=profile.account)
+                c = Contact.objects.get(email=to_email, account=profile.account)
                 return c
             except:
                 c = Contact.objects.create(email=to_email, name=to_name, account=profile.account)
@@ -36,7 +36,7 @@ class Command(BaseCommand):
             from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '')
         if from_email != profile.user.email:
             try:
-                c = Contact.objects.get(email=from_email, name=from_name, account=profile.account)
+                c = Contact.objects.get(email=from_email, account=profile.account)
                 return c
             except:
                 c = Contact.objects.create(email=from_email, name=from_name, account=profile.account)
@@ -85,7 +85,7 @@ class Command(BaseCommand):
                         m_uid=message.uid)
                 except:
                     # Check To and From addresses for Contact
-                    contact = self.get_client(message.To, message.From, profile)
+                    contact = self.get_contact(message.To, message.From, profile)
 
                     msg = Message()
                     msg.profile = profile
@@ -96,4 +96,6 @@ class Command(BaseCommand):
                     msg.m_subject = self.parse_subject(message.Subject)
                     msg.m_body = self.parse_body(message.Body)
                     msg.contact_id = contact.pk
+                    if contact.client:
+                        msg.client = contact.client
                     msg.save()

@@ -4,15 +4,13 @@
 {% block title %}Create Account{% endblock title %}
 
 {% block body %}
-<div class="row">
-    <div class="span5 offset4">
-        <h2>Create your account</h2>
-        <form class="form-horizontal" action="" method="POST">{% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Create an Account</button>
-            </div>
-        </form>
-    </div>
+<div class="span5 offset3 well">
+    <h2>Create your account</h2>
+    <form class="form-horizontal" action="" method="POST">{% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Create an Account</button>
+        </div>
+    </form>
 </div>
 {% endblock body %}
