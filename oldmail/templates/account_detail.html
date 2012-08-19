@@ -11,9 +11,19 @@
     data.addColumn('string', 'Date');
     data.addColumn('number', 'Emails');
     data.addRows([
-    {% for day in account.messages_stats_last30 %}
-        ['{{ day.day|date:"m/d" }}', {{ day.total }}],
-    {% endfor %}
+        {% if account.messages_stats_last30|length > 20 %}
+            {% for day in account.messages_stats_last30 %}
+                ['{% cycle day.day|date:"m/d" '' '' %}', {{ day.total }}],
+            {% endfor %}
+        {% elif account.messages_stats_last30|length > 10 %}
+            {% for day in account.messages_stats_last30 %}
+                ['{% cycle day.day|date:"m/d" '' %}', {{ day.total }}],
+            {% endfor %}
+        {% else %}
+            {% for day in account.messages_stats_last30 %}
+                ['{{ day.day|date:"m/d" }}', {{ day.total }}],
+            {% endfor %}
+        {% endif %}
     ]);
 
     var chart = new google.visualization.LineChart(document.getElementById('visualization'));
