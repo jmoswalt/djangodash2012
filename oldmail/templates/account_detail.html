@@ -7,6 +7,11 @@
 <div class="span9">
     <h1>Main body for account page</h1>
     <p>Maybe pull in latest emails?</p>
+    <ul>
+    {% for contact in account.contacts %}
+        <li><a href="{{ contact.get_absolute_url }}">{{ contact }} ({{ contact.messages|length }})</a></li>
+    {% endfor %}
+    </ul>
     <a href="{% url account_change account.slug %}" class="btn btn-info">Change account name</a>
 </div>
 {% endblock body %}

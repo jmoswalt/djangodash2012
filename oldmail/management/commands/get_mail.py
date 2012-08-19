@@ -49,42 +49,51 @@ class Command(BaseCommand):
 
     def parse_address(self, address):
         result = re.sub("(.*)<([\\w\\.\\@]+)>", "\\2", address)
-        return result.split(',')[0]
+        return result.split(',')[0].lower()
+
+    def parse_subject(self, subject):
+        result = subject.replace('=20', ' ').replace('=?UTF-8?Q?', '').replace('=?utf-8?Q?', '')
+        return result
+
+    def parse_body(self, body):
+        result = body.replace('=3D', '=').replace('=20', ' ').replace('=0D', '')
+        result = result.replace('=\r', '').replace("=90", '')
+        result = result.replace('=C2=A0', ' ').replace('=E2=80=99', "'")
+        return result
 
     def handle(self, *args, **options):
-        email_address = args[0]
+        try:
+            email_address = args[0]
+            profiles = [get_object_or_404(Profile, user__email=email_address)]
+        except:
+            profiles = Profile.objects.exclude(oauth_token__exact='').exclude(oauth_token_secret__exact='')
         try:
             limit = args[1]
         except:
-            limit = 10
+            limit = 1000
 
-        profile = get_object_or_404(Profile, user__email=email_address)
+        for profile in profiles:
+            print "Getting mail for %s" % profile.user.email
+            messages = profile.get_messages(limit)
 
-        messages = profile.get_messages(limit)
+            for gmessage in messages:
+                message = messages.getMessage(gmessage.uid)
 
-        for gmessage in messages:
-            message = messages.getMessage(gmessage.uid)
+                # Check To and From addresses for Contact
+                contact = self.get_client(message.To, message.From, profile)
 
-            # Check To and From addresses for Contact
-            contact = self.get_client(message.To, message.From, profile)
-            print contact.pk
-            # Check Contact for number of Clients
-
-            print self.parse_address(message.To)
-            print "DATE: ", message.date
-
-            try:
-                msg = Message.objects.get(
-                    profile=profile,
-                    m_uid=message.uid)
-            except:
-                msg = Message()
-                msg.profile = profile
-                msg.m_uid = message.uid
-                msg.m_date = parse(message.date)
-                msg.m_from = self.parse_address(message.From)
-                msg.m_to = self.parse_address(message.To)
-                msg.m_subject = message.Subject
-                msg.m_body = message.Body
-                msg.contact_id = contact.pk
-                msg.save()
+                try:
+                    msg = Message.objects.get(
+                        profile=profile,
+                        m_uid=message.uid)
+                except:
+                    msg = Message()
+                    msg.profile = profile
+                    msg.m_uid = message.uid
+                    msg.m_date = parse(message.date)
+                    msg.m_from = self.parse_address(message.From)
+                    msg.m_to = self.parse_address(message.To)
+                    msg.m_subject = self.parse_subject(message.Subject)
+                    msg.m_body = self.parse_body(message.Body)
+                    msg.contact_id = contact.pk
+                    msg.save()

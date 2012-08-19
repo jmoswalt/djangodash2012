@@ -21,6 +21,9 @@ class Account(models.Model):
     def clients(self):
         return self.client_set.all()
 
+    def contacts(self):
+        return self.contact_set.all()
+
 
 class Client(models.Model):
     """docstring for Client"""
@@ -86,10 +89,7 @@ class Contact(models.Model):
         return self.message_set.all()
 
     def get_absolute_url(self):
-        if self.client:
-            return reverse('contact_message_list', args=[self.account.slug, self.pk])
-        else:
-            return "#"  # TODO: link to the assign_contact page
+        return reverse('contact_message_list', args=[self.account.slug, self.pk])
 
 
 class Message(models.Model):

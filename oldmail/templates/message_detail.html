@@ -35,9 +35,13 @@
         </tr>
     </table>
 </div>
-<div class="span9">
+<div class="span9 clearfix">
     <div class="well">
-    {{ message.m_body|safe|urlize }}
+        {% if "<html>" in message.m_body %}
+            {{ message.m_body|safe }}
+        {% else %}
+            {{ message.m_body|striptags|urlize|linebreaks }}
+        {% endif %}
     </div>
 </div>
 

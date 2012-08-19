@@ -14,6 +14,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.db.models import Q
 
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
@@ -208,6 +209,13 @@ class ContactMessageList(ListView):
 
         qs = Message.objects.filter(contact=contact)
 
+        if "q" in self.request.GET:
+            q = self.request.GET['q']
+            print q
+            qs = qs.filter(Q(m_subject__icontains=q) | Q(m_body__icontains=q))
+
+        qs.order_by('m_date')
+
         return qs
 
 
@@ -238,6 +246,13 @@ class ClientMessageList(ListView):
                 raise Http404
 
         qs = Message.objects.filter(client=client)
+
+        if "q" in self.request.GET:
+            q = self.request.GET['q']
+            print q
+            qs = qs.filter(Q(m_subject__icontains=q) | Q(m_body__icontains=q))
+
+        qs.order_by('m_date')
 
         return qs
 

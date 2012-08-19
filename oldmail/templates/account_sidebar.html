@@ -14,7 +14,7 @@
         <h4>Clients</h4>
         <ul>
         {% for client in request.user.profile.account.clients %}
-            <li><a href="{% url client_detail user.profile.account.slug client.pk %}">{{ client.name }}</a></li>
+            <li><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></li>
         {% endfor %}
         <a href="{% url client_add user.profile.account.slug %}">Add a client</a>
         </ul>
