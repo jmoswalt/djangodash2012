@@ -8,6 +8,7 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django.test.client import Client
 
+
 class SimpleTest(TestCase):
 
     def setUp(self):
@@ -16,7 +17,7 @@ class SimpleTest(TestCase):
         """
         from django.contrib.auth.models import User
         from django.template.defaultfilters import slugify
-        from oldmail.models import Account, Profile, Client, Contact
+        from oldmail.models import Account, Profile, Contact
 
         account_name = 'Schipul'
         self.account = Account.objects.create(
@@ -48,7 +49,7 @@ class SimpleTest(TestCase):
         )
 
     def test_data_retrieval(self):
-        from oldmail.models import Account, Profile, Client, Contact
+        from oldmail.models import Account, Profile, Contact
 
         print 'Testing data creation/retrieval'
 
@@ -56,27 +57,27 @@ class SimpleTest(TestCase):
         print '%d Profile' % Profile.objects.count()
         print '%d Client' % Client.objects.count()
         print '%d Contact' % Contact.objects.count()
-        
+
     def test_account_login(self):
         client = Client()
         response = client.get('/accounts/login/')
         self.assertEqual(response.status_code, 200)
-        
+
     def test_account_out(self):
         client = Client()
         response = client.get('/accounts/logout/')
         self.assertEqual(response.status_code, 200)
-        
+
     def test_about(self):
         client = Client()
         response = client.get('/about/')
         self.assertEqual(response.status_code, 200)
-        
+
     def test_signup(self):
         client = Client()
         response = client.get('/signup/')
         self.assertEqual(response.status_code, 200)
-        
+
     def test_home(self):
         client = Client()
         response = client.get('/')

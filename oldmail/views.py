@@ -1,5 +1,3 @@
-import urllib
-import urllib2
 import random
 import time
 from django.http import HttpResponseRedirect
@@ -16,7 +14,6 @@ from django.http import Http404
 from django.template import RequestContext
 from django.core.management import call_command
 from django.shortcuts import render_to_response, get_object_or_404
-from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import Q
@@ -25,8 +22,6 @@ from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm, ContactChangeForm
 from oldmail.utils import send_email, random_string
-
-from oldmail.xoauth import get_oauth_signature
 
 
 @login_required
@@ -452,6 +447,3 @@ class SearchView(LoginRequiredMixin, TemplateView):
         context['contacts'] = context['contacts'].order_by('name')[:100]
 
         return context
-
-
-

@@ -65,12 +65,12 @@ class AccountInviteForm(forms.ModelForm):
                         signup_link.get_activate_url(),
                         site_url,
                         signup_link.get_activate_url(),
-                    )
+                )
                 send_email(
                     "You've been invited to Oldmail",
                     message,
                     [email]
-                    )
+                )
 
         return a
 
