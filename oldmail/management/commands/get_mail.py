@@ -61,8 +61,8 @@ class Command(BaseCommand):
             result = result.replace('\r', '').replace('\n', '')
         result = result.replace('=3D', '=').replace('=20', ' ').replace('=0D', '')
         result = result.replace("=90", '').replace("=09", '')
-        result = result.replace('=C2=A0', ' ').replace('=E2=80=99', "'")
-        result = result.replace('=0A', '')
+        result = result.replace('=C2', ' ').replace('=E2=80=99', "'")
+        result = result.replace('=0A', '').replace('=A0', '')
         return result
 
     def handle(self, *args, **options):
