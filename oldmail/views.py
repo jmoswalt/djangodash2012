@@ -41,6 +41,7 @@ def get_mail(request, slug):
     messages.success(request, 'Your mail has been updated.', extra_tags='success')
     return HttpResponseRedirect(reverse('account_detail', args=[request.user.profile.account.slug]))
 
+
 @login_required
 def oauth_connect(request, slug, template_name='oauth1.html'):
     from oldmail.lib.xoauth import OAuthEntity, GenerateRequestToken, GoogleAccountsUrlGenerator, GetAccessToken
