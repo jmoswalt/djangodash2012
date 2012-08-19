@@ -3,13 +3,71 @@
 {% block title %}About OldMail - Group Email Archive Sharing (Djangodash 2012){% endblock %}
 
 {% block body %}
-<div class="span12">
-    <h1>About OldMail</h2>
-    <p>OldMail archives your email from a special folder (or label in Gmail). When you label something with the label <strong>@oldmail</strong>, those emails are regularly collected to be shared with your team.</p>
-    <p>This is our solution to replacing the Public Folders we used to have in MS Exchange.</p>
-    <p>This project was created by <a href="https://github.com/eloyz">Eloy</a>, <a href="https://github.com/jennyq">Jenny</a>, and <a href="https://github.com/jmoswalt">JMO</a> for the <a href="http://djangodash.com/">2012 Djangodash</a>. We work together for <a href="http://schipul.com/">Schipul</a>. We build <a href="http://tendenci.com/">Tendenci</a>, an open source CMS for non-profits built on Django.</p>
-    {% if not request.user.is_authenticated %}
-    <p><a href="{% url signup %}">Signup today</a> and see how OldMail help help you share email.</p>
-    {% endif %}
+
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span3 well sidebar-nav">
+        <ul class="nav nav-list">
+            <li class="nav-header">Why OldMail exists</li>
+            <li><a href="#public-folders">Replacing Public Folders</a></li>
+            <li><a href="#django-dash">DjangoDash 2012</a></li>
+            <li class="nav-header">Frequently Asked Questions</li>
+            <li><a href="#for-me">Would I use this?</a></li>
+            <li><a href="#whats-archived">What do you archive?</a></li>
+            <li><a href="#when-do-you-archive">How often do you archive?</a></li>
+            <li class="nav-header">How do I get started?</li>
+            <li><a href="#sign-up">Sign up for an account</a></li>
+            <li><a href="#invite-coworkers">Invite your coworkers</a></li>
+            <li><a href="#define-client-contact">What's a client and a contact?</a></li>
+            <li><a href="#create-label">Create a label <strong>"@oldmail"</strong></a></li>
+            <li><a href="#start-collecting">Start collecting emails</a></li>
+        </ul>
+    </div>
+    <div class="span9">
+        <h1 id="about">About OldMail</h1>
+
+
+        <h3 id="public-folders">Replacing Public Folders</h3>
+        <p>This is our solution to replacing the Public Folders we used to have in MS Exchange.</p>
+        <p>We looked for a solution, but came up short every time; so we built one.</p>
+
+        <h3 id="django-dash">Djangodash 2012</h3>
+        <p>This project was created by <a href="https://github.com/eloyz">Eloy</a>, <a href="https://github.com/jennyq">Jenny</a>, and <a href="https://github.com/jmoswalt">JMO</a> for the <a href="http://djangodash.com/">2012 Djangodash</a>. We work together for <a href="http://schipul.com/">Schipul</a>. We build <a href="http://tendenci.com/">Tendenci</a>, an open source CMS for non-profits built on Django.</p>
+
+        <h3 id="for-me">Would I use this?</h3>
+        <p>If you own or work for an organization that is highly dependent on communication.  We just might be for you. The goal is to keep everyone on the same page so that no matter who talks to a customer, everyone knows what everyone else knows.</p>
+
+        <h3 id="whats-archived">What do you archive?</h3>
+        <p>We only archive the email that is labled "@oldmail." Eventually we hope to support true syncing, but for now we do one way archiving from your gmail account.</p>
+        <p>This means you should be careful about what you choose to group archive, but this will always be our suggestion.</p>
+
+        <h3 id="when-do-you-archive">When do you archive?</h3>
+        <p>We archive once a day, but there is a button available on every profile that when pressed will manually pull all emails not already archived.  Including emails that date back years.</p>
+
+        <h3 id="sign-up">Sign up for an account</h3>
+        <p><a href="{% url signup %}">Sign up for an account.</a> This is the part where we create your account name (i.e. name of your organization) and some basic information about you. (e.g. first name, last name, email, and password)</p>
+
+        <h3 id="invite-coworkers">Invite your coworkers</h3>
+        <p>As the creator of the account you and you alone have the privilege of inviting more members to your account.</p>
+        <p>Once your members accept your invite they can then setup their gmail account to start archiving.</p>
+        <p>Once their emails start coming in, you can associate contacts with clients you have.</p>
+        <p>This means viewing a clients page will filter out all conversations [emails] associated with that client.</p>
+
+        <h3 id="define-client-contact">What's a client and a contact?</h3>
+        <p>Clients are well ... your clients or customers.  When you have conversations with your customers you don't talk to an organization or the company.  You talk to a person, and that person is known as your contact.</p>
+        <p>Our interface is designed to let you associate your contact with your client; so that when you need to recall a conversation you had with a client it's there just where you left it.</p>
+        <p>You make the association once, and we organize from there.</p>
+        <p>If you a meet a new contact for an existing client, simply add them.</p>
+        <p>A list of unassociated contacts can be found on your dashboard.</p>
+
+        <h3 id="create-label">Create a label "@oldmail"</h3>
+        <p>OldMail archives your email from a special folder (or label in Gmail). When you label something with the label <strong>@oldmail</strong>, those emails are regularly collected to be shared with your team.</p>
+
+        <h3 id="start-collecting">Start collecting emails</h3>
+        <p>Collecting emails is as easy as labeling emails <strong>@oldmail</strong>.  We archive so that you can search.</p>
+
+    </div>
+  </div>
 </div>
+
 {% endblock body %}
