@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="span12">
+    <h1>Set Up and Authorize</h1>
+    <ol>
+        <li>Step 1: Create a label "{{ folder_name }}" in your gmail account for <strong>{{ email_address }}</strong>.</li>
+        <li>Step 2: Click <a href="{{ token_url }}" target="_blank">the link</a> to approve access to your "{{ folder_name}}". <strong>Google will give you a code. You need to copy this code</strong></li>
+        <li>Step 3: Paste the code that google gave you in Step 2 into the box below and click "Authorize".</li>
+    </ol>
+    <div class="oauth-btn">
+        <form method="POST">{% csrf_token %}
+            <input type="text" name="oauth_verifier" value="" />
+            <input type="submit" name="submit" value="Authorize" />
+        </form>
+    </div>
+</div>
+{% endblock body %}

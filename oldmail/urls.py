@@ -7,11 +7,10 @@ urlpatterns = patterns('oldmail.views',
     url(r'^invite/$', views.AccountInviteView.as_view(), name="account_invite"),
     url(r'^change/$', views.AccountChangeView.as_view(), name="account_change"),
 
+    url(r'^oauth1/$', 'oauth_connect', name="oauth_connect"),
+
     url(r'^oauth2/$', 'oauth2', name="oauth2"),
     url(r'^oauth2callback/$', 'oauth2_callback', name="oauth2_callback"),
-    
-    url(r'^oauth/$', 'get_request_token', name="get_request_token"),
-    url(r'^oauthcallback/$', 'oauth_callback', name="oauth_callback"),
 
     url(r'^profile/activate/(?P<random_string>[\w]+)/$', views.ProfileAddView.as_view(), name="profile_activate"),
     url(r'^profile/verify/(?P<random_string>[\w]+)/$', views.ProfileVerifyView.as_view(), name="profile_verify"),

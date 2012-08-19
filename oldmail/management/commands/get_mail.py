@@ -79,14 +79,14 @@ class Command(BaseCommand):
             for gmessage in messages:
                 message = messages.getMessage(gmessage.uid)
 
-                # Check To and From addresses for Contact
-                contact = self.get_client(message.To, message.From, profile)
-
                 try:
                     msg = Message.objects.get(
                         profile=profile,
                         m_uid=message.uid)
                 except:
+                    # Check To and From addresses for Contact
+                    contact = self.get_client(message.To, message.From, profile)
+
                     msg = Message()
                     msg.profile = profile
                     msg.m_uid = message.uid

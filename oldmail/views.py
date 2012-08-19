@@ -23,7 +23,109 @@ from oldmail.models import Account, Client, SignupLink, Profile, Contact, Messag
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
 from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
+
 from oldmail.xoauth import get_oauth_signature
+
+
+@login_required
+def oauth_connect(request, slug, template_name='oauth1.html'):
+    from oldmail.lib.xoauth import OAuthEntity, GenerateRequestToken, GoogleAccountsUrlGenerator, GetAccessToken
+
+    request_token_url = ''
+    scope = 'https://mail.google.com/'
+    nonce = str(random.randrange(2 ** 64 - 1))
+    timestamp = str(int(time.time()))
+    consumer = OAuthEntity(settings.OAUTH2_CONSUMER_KEY, settings.OAUTH2_CONSUMER_SECRET)
+    google_accounts_url_generator = GoogleAccountsUrlGenerator(request.user.email)
+
+    request_token = request.session.get('generated_token', None)
+
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == "POST" and request_token:
+        print 'POST'
+        oauth_verifier = request.POST['oauth_verifier']
+        oauth_token, oauth_token_secret = GetAccessToken(consumer, request_token, oauth_verifier, google_accounts_url_generator)
+        profile.oauth_token = oauth_token
+        profile.oauth_token_secret = oauth_token_secret
+        profile.save()
+
+        messages.success(request, 'Your account has been authorized to sync.', extra_tags='success')
+
+        return HttpResponseRedirect(reverse('account_detail', args=[profile.account.slug]))
+
+    else:
+        token, request_token_url = GenerateRequestToken(consumer, scope, nonce,
+                                         timestamp,
+                                         google_accounts_url_generator)
+
+        request.session['generated_token'] = token
+
+    return render_to_response(template_name, {'folder_name': request.user.profile.sync_label, 'email_address': request.user.email, 'token_url': request_token_url},
+            context_instance=RequestContext(request))
+
+
+#@login_required
+def authenticate(request, slug, template_name='authenticate.html'):
+    """
+    Authenticate a user with his/her gmail account.
+    The user can grant or denied the access.
+
+    access_type: online or offline
+    approval_prompt: force or auto
+    """
+    # construct the url to authenticate
+    if not all([hasattr(settings, 'OAUTH2_CLIENT_ID'),
+                hasattr(settings, 'OAUTH2_REDIRECT_URL')]):
+        raise Http404
+
+    if request.method == "POST":
+        url = settings.OAUTH2_ENDPOINT
+        params = {'scope': settings.OAUTH2_SCOPE,
+                  'client_id': settings.OAUTH2_CLIENT_ID,
+                  'redirect_uri': settings.OAUTH2_REDIRECT_URL,
+                  'response_type': 'code',
+                  'state': '',
+                  'access_type': 'offline',
+                  'approval_prompt': 'auto'}
+        #TODO: assign user to the state param
+        url = '%s?%s' % (url, urllib.urlencode(params))
+
+        return HttpResponseRedirect(url)
+
+    return render_to_response(template_name, {'folder_name': request.user.profile.sync_label},
+            context_instance=RequestContext(request))
+
+
+def authenticate_callback(request):
+    """
+    Handle the response after the auth request gets sent back to the site.
+    """
+    # first, get the authorization code.
+    error = request.GET.get('error', '')
+    if error == 'access_denied':
+        # redirect to let them try again
+        messages.add_message(request, messages.ERROR, 'Access denied.')
+        return HttpResponseRedirect(reverse('authenticate'))
+
+    code = request.GET.get('code', '')
+    state = request.GET.get('state', '')
+
+    # exachange the authorization code for an access token and a refresh token
+    params = {'code': code,
+              'client_id': settings.OAUTH2_CLIENT_ID,
+              'client_secret': settings.OAUTH2_CLIENT_SECRET,
+              'redirect_uri': settings.OAUTH2_REDIRECT_URL,
+              'grant_type': 'authorization_code'}
+    result = urllib2.urlopen('http://example.com', urllib.urlencode(params))
+    content = result.read()
+
+    # a successful response is returned as a JSON array
+    content_d = simplejson.loads(content)
+    access_token = content_d['access_token']
+    expires_in = content_d['expires_in']
+    token_type = content_d['token_type']
+    refresh_token = content_d['refresh_token']
 
 
 class LoginRequiredMixin(object):
