@@ -6,7 +6,7 @@ import dj_database_url
 PROJECT_ROOT = os.path.abspath('.')
 
 # Helper lambda for gracefully degrading environmental variables:
-env = lambda e, d: environ[e] if environ.has_key(e) else d
+env = lambda e, d: environ[e] if e in environ else d
 
 # Load the .env file into the os.environ for secure information
 try:
@@ -187,8 +187,10 @@ LOGGING = {
     }
 }
 
+TEST_RUNNER = 'conf.tests.NoDbTestRunner'
+
 # set up the following settings in your .env
-# to be deleted, 
+# to be deleted,
 OAUTH2_CLIENT_ID = env('OAUTH2_CLIENT_ID', '')
 OAUTH2_CLIENT_SECRET = env('OAUTH2_CLIENT_SECRET', '')
 OAUTH2_REDIRECT_URL = env('OAUTH2_REDIRECT_URL', '')
@@ -205,7 +207,3 @@ OAUTH_SCOPE = 'https://mail.google.com/mail/feed/atom'
 OAUTH_REDIRECT_URL = 'http://oldmail.herokuapp.com/oauth2callback'
 OAUTH_CONSUMER_KEY = env('OAUTH_CONSUMER_KEY', '')
 OAUTH_CONSUMER_SECRET = env('OAUTH_CONSUMER_SECRET', '')
-
-
-
-
