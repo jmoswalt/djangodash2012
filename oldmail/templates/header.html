@@ -21,7 +21,7 @@
 
 
           {% if request.user.is_authenticated and request.user.profile.account %}
-          <li><a href="{% url account_detail request.user.profile.account.slug %}">Account: {{ request.user.profile.account.name }}</a></li>
+          <li><a href="{% url account_detail request.user.profile.account.slug %}">Dashboard</a></li>
           {% endif %}
 
         </ul>
