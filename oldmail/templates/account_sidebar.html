@@ -1,6 +1,12 @@
     <div>
         <h4>Account members</h4>
         <table class="table table-condensed">
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Sync?</th>
+            </tr>
+
         {% for profile in request.user.profile.account.profiles %}
             <tr>
                 {% if request.user.profile == profile %}
@@ -9,7 +15,12 @@
                     <td>{{ profile.user.get_full_name }}</td>
                 {% endif %}
                 <td>{{ profile.user.email }}</td>
-                <td>{% if profile.oauth_token %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}</td>
+                <td>{% if profile.oauth_token %}<i class="icon-ok"></i>{% else %}
+                    {% if request.user.profile == profile %}
+                    <a href="{% url authenticate profile.account.slug %}">Go</a>
+                    {% else %}
+                    <i class="icon-remove"></i>{% endif %}
+                {% endif %}</td>
             </tr>
         {% endfor %}
         {% if request.user.profile.is_account_admin %}
