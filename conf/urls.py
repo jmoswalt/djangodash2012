@@ -24,8 +24,8 @@ urlpatterns = patterns('',
     url(r'^accounts/list/$', views.AccountListView.as_view(), name="account_list"),
 
     url(r'^accounts/profile/$', redirect_to, {'url': '/'}),
-    url(r'^accounts/login/$', redirect_to, {'url': '/auth/login/'}),
-    url(r'^auth/', include('django.contrib.auth.urls')),
+    #url(r'^accounts/login/$', redirect_to, {'url': '/auth/login/'}),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
     'document_root': settings.STATIC_ROOT, }),
     url(r'^(?P<slug>[\w\-]+)/', include('oldmail.urls')),

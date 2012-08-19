@@ -2,8 +2,47 @@
 
 {% block body %}
 <div class="span12">
-    <h1>Message {{ object.pk }}</h1>
-    {{ message.m_body|safe }}
+    <h2>Subject: {{ message.m_subject }}</h2>
+</div>
+<div class="span3">
+    <table class="table">
+        {% if message.client %}
+        <tr>
+            <th width="50px">Client</th>
+            <td><a href="{{ message.client.get_absolute_url }}">{{ message.client }}</a></td>
+        </tr>
+        {% endif %}
+        {% if message.contact %}
+        <tr>
+            <th width="50px">Contact</th>
+            <td><a href="{{ message.contact.get_absolute_url }}">{{ message.contact }}</a></td>
+        </tr>
+        {% endif %}
+    </table>
+    <table class="table table-bordered">
+        <tr>
+            <td width="50px">Date</td>
+            <td><strong>{{ message.m_date }}</strong><br />
+                ({{ message.m_date|timesince }} ago)</td>
+        </tr>
+        <tr>
+            <td>From:</td>
+            <th>{{ message.m_from }}</th>
+        </tr>
+        <tr>
+            <td>To:</td>
+            <th>{{ message.m_to }}</th>
+        </tr>
+    </table>
+</div>
+<div class="span9 clearfix">
+    <div class="well">
+        {% if "<html>" in message.m_body %}
+            {{ message.m_body|safe }}
+        {% else %}
+            {{ message.m_body|striptags|urlize|linebreaks }}
+        {% endif %}
+    </div>
 </div>
 
 {% endblock body %}

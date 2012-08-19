@@ -1,0 +1,10 @@
+    {% if contact.name %}
+        <h4>{{ contact.email }}</h4>
+    {% endif %}
+    <p><strong>Client:</strong> 
+    {% if contact.client %}
+        <a href="{{ contact.client.get_absolute_url }}">{{ contact.client }}</a>
+    {% else %}
+        <a href="{{ contact.get_change_url }}">Pick a Client</a>
+    {% endif %}
+    </p>

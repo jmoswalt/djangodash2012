@@ -16,6 +16,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.db.models import Q
 
 from oldmail.utils import lazy_reverse
 from oldmail.models import Account, Client, SignupLink, Profile, Contact, Message
@@ -23,6 +24,13 @@ from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, 
 from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
 from oldmail.xoauth import get_oauth_signature
+
+
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+
 
 class HomePageView(TemplateView):
     template_name = "home.html"
@@ -32,13 +40,9 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
-class AccountView(DetailView):
+class AccountView(LoginRequiredMixin, DetailView):
     model = Account
     template_name = "account_detail.html"
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -63,7 +67,7 @@ class AccountAdd(FormView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class AccountListView(ListView):
+class AccountListView(LoginRequiredMixin, ListView):
     model = Account
     template_name = "account_list.html"
 
@@ -72,13 +76,9 @@ class AccountListView(ListView):
         return super(AccountListView, self).dispatch(*args, **kwargs)
 
 
-class AccountInviteView(UpdateView):
+class AccountInviteView(LoginRequiredMixin, UpdateView):
     template_name = "account_invite.html"
     form_class = AccountInviteForm
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountInviteView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -111,13 +111,9 @@ class AccountInviteView(UpdateView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class AccountChangeView(UpdateView):
+class AccountChangeView(LoginRequiredMixin, UpdateView):
     template_name = "account_change.html"
     form_class = AccountChangeForm
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountChangeView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -141,7 +137,6 @@ class ProfileAddView(FormView):
         initial = super(ProfileAddView, self).get_initial()
         signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
         initial['account'] = signup_link.account_id
-        print signup_link.email
         initial['email'] = signup_link.email
         return initial
 
@@ -149,6 +144,8 @@ class ProfileAddView(FormView):
         profile = form.add_profile()
         user = dj_auth(username=profile.user.username, password=form.cleaned_data['password'])
         login(self.request, user)
+        signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+        signup_link.delete()
         messages.success(self.request, 'Your profile for %s has been created. You are now logged in.' % profile.account.name, extra_tags='success')
         return HttpResponseRedirect(reverse('account_detail', args=[profile.account.slug]))
 
@@ -160,8 +157,12 @@ class ProfileVerifyView(DetailView):
     def get_object(self, **kwargs):
         signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
         profile = get_object_or_404(Profile, user__email=signup_link.email)
-        profile.is_verified = True
-        profile.save()
+        if profile.is_verified:
+            signup_link = get_object_or_404(SignupLink, random_string=self.kwargs['random_string'], account__slug=self.kwargs['slug'])
+            signup_link.delete()
+        else:
+            profile.is_verified = True
+            profile.save()
 
         return profile
 
@@ -169,27 +170,62 @@ class ProfileVerifyView(DetailView):
         return HttpResponseRedirect(reverse('account_invite', args=[self.get_object().account.slug]))
 
 
-class MessageView(DetailView):
+class MessageView(LoginRequiredMixin, DetailView):
     """
     View of a single message
     """
     template_name = 'message_detail.html'
     model = Message
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(MessageView, self).dispatch(*args, **kwargs)
-
     def get_object(self, **kwargs):
         user = self.request.user
         account = get_object_or_404(Account, slug=self.kwargs['slug'])
         # Check if you can see this object
+        # no special exemptions for staff or superusers
+        if not user.profile.account == account:
+            raise Http404
+
+        obj = get_object_or_404(Message, pk=self.kwargs['pk'], profile__account=account.pk)
+        return obj
+
+
+class ContactMessageList(ListView):
+    """
+    A list of messages filtered for a specific Contact
+    """
+    model = Message
+    template_name = "message_list.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ContactMessageList, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactMessageList, self).get_context_data(**kwargs)
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        context['contact'] = get_object_or_404(Contact, pk=self.kwargs['pk'], account=account)
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        contact = get_object_or_404(Contact, pk=self.kwargs['pk'], account=account)
+
         if not user.is_staff and not user.is_superuser:
             if not user.profile.account == account:
                 raise Http404
 
-        obj = get_object_or_404(Message, pk=self.kwargs['pk'])
-        return obj
+        qs = Message.objects.filter(contact=contact)
+        
+        if "q" in self.request.GET:
+            q = self.request.GET['q']
+            print q
+            qs = qs.filter(Q(m_subject__icontains=q) | Q(m_body__icontains=q))
+
+        qs.order_by('m_date')
+
+        return qs
+
 
 #@login_required    
 def get_request_token(request, slug='', template_name='authenticate.html'):
@@ -241,31 +277,66 @@ def get_request_token(request, slug='', template_name='authenticate.html'):
 
 def oauth_callback(request):
     pass
+        
+
+class ClientMessageList(ListView):
+    """
+    A list of messages filtered for a specific Client
+    """
+    model = Message
+    template_name = "message_list.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ClientMessageList, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientMessageList, self).get_context_data(**kwargs)
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        context['client'] = get_object_or_404(Client, pk=self.kwargs['pk'], account=account)
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        client = get_object_or_404(Client, pk=self.kwargs['pk'], account=account)
+
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == account:
+                raise Http404
+
+        qs = Message.objects.filter(client=client)
+
+        if "q" in self.request.GET:
+            q = self.request.GET['q']
+            print q
+            qs = qs.filter(Q(m_subject__icontains=q) | Q(m_body__icontains=q))
+
+        qs.order_by('m_date')
+
+        return qs
 
 
-class ClientDetail(DetailView):
+class ClientDetail(LoginRequiredMixin, DetailView):
     model = Client
     template_name = 'client_detail.html'
 
     def get_success_url(self):
         return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context, **kwargs):
 
         context.update({
             'edit_link': reverse('client_change', \
                 args=[self.request.user.profile.account.slug, self.object.pk])
         })
 
-        return super(ClientDetail, self).render_to_response(context, **response_kwargs)
+        return super(ClientDetail, self).render_to_response(context, **kwargs)
 
 
-class ClientCreate(CreateView):
+class ClientCreate(LoginRequiredMixin, CreateView):
     model = Client
     template_name = 'client_form.html'
-
-    def get_success_url(self):
-        return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
     def post(self, request, *args, **kwargs):
         self.account = request.user.profile.account
@@ -277,58 +348,96 @@ class ClientCreate(CreateView):
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_success_url(self):
+        messages.success(self.request, 'New Client %s has been added.' % self.object.name, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next'] + "?client_id=%s" % self.object.pk
+        return self.object.get_absolute_url()
 
-class ClientList(ListView):
+
+class ClientList(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client_list.html'
 
 
-class ClientChange(UpdateView):
+class ClientChange(LoginRequiredMixin, UpdateView):
     model = Client
     template_name = 'client_form.html'
 
     def get_success_url(self):
-        return lazy_reverse('client_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'Client %s has been updated.' % self.object.name, extra_tags='success')
+        return self.object.get_absolute_url()
 
 
-class ContactCreate(CreateView):
+class ContactCreate(LoginRequiredMixin, CreateView):
     model = Contact
     template_name = 'contact_form.html'
 
+    def post(self, request, *args, **kwargs):
+        self.account = request.user.profile.account
+        return super(ContactCreate, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.account = self.account
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
-        return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'New Contact %s has been added.' % self.object, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
+        return self.object.get_absolute_url()
 
 
-class ContactList(ListView):
+class ContactList(LoginRequiredMixin, ListView):
     model = Contact
     template_name = 'contact_list.html'
 
 
-class ContactChange(UpdateView):
+class ContactChange(LoginRequiredMixin, UpdateView):
     model = Contact
     template_name = 'contact_form.html'
 
+    def form_valid(self, form):
+        self.object = form.save()
+        contact_messages = Message.objects.filter(contact=self.object).filter(client__isnull=True)
+        contact_messages.update(client=self.object.client)
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
-        return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'Contact %s has been updated.' % self.object.name, extra_tags='success')
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
+        return self.object.get_absolute_url()
 
 
-class ProfileList(ListView):
+class ProfileList(LoginRequiredMixin, ListView):
     model = Profile
     template_name = 'profile_list.html'
 
 
-class ProfileChange(UpdateView):
+class ProfileChange(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileChangeForm
     template_name = 'profile_form.html'
 
     def get_success_url(self):
         return lazy_reverse('profile_list', self.request.user.profile.account.slug)
+
+    def render_to_response(self, context, **kwargs):
+
+        # if you're not an inny you're outty
+        if not self.request.user.pk == self.object.pk:
+            self.template_name = '403.html'
+            kwargs.update({'status': 403})
+
+        return super(ProfileChange, self).render_to_response(context, **kwargs)
     
 #@login_required
 def oauth2(request, slug='', template_name='oauth2.html'):
     """
-    Authenticate a user with his/her gmail account. 
+    Let user authorize his/her gmail account. 
     The user can grant or denied the access.
     
     access_type: online or offline
@@ -395,3 +504,4 @@ def oauth2_callback(request, template_name='oauth2_callback.html'):
     refresh_token = content_d['refresh_token']
     
     # save to the database
+
