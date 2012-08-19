@@ -1,19 +1,21 @@
     <div>
         <h4>Account members</h4>
-        <ul>
+        <table class="table table-condensed">
         {% for profile in request.user.profile.account.profiles %}
-            <li>
+            <tr>
                 {% if request.user.profile == profile %}
-                    <a href="{% url profile_change user.profile.account.slug profile.user.pk %}">{{ profile.user.get_full_name }} ({{ profile.user.email }})</a>
+                    <td><a href="{% url profile_change user.profile.account.slug profile.user.pk %}">{{ profile.user.get_full_name }}</a></td>
                 {% else %}
-                    {{ profile.user.get_full_name }} ({{ profile.user.email }})
+                    <td>{{ profile.user.get_full_name }}</td>
                 {% endif %}
-            </li>
+                <td>{{ profile.user.email }}</td>
+                <td>{% if profile.oauth_token %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}</td>
+            </tr>
         {% endfor %}
         {% if request.user.profile.is_account_admin %}
             
         {% endif %}
-        </ul>
+        </table>
     </div>
     {% if request.user.profile.is_account_admin %}
     <div>
