@@ -4,7 +4,13 @@
 {% block body %}
 
 <div class="span12">
-    <h1>Messages for {% firstof contact client %}</h1>
+    <h1>Messages for {% firstof contact client %} <span class="pull-right">
+        {% if client %}<a class="btn btn-primary" href="{{ client.get_change_url }}">Edit Client</a>
+        {% elif contact %}
+        <a class="btn btn-primary" href="{{ contact.get_change_url }}">Edit Contact</a>
+        {% endif %}
+        </span>
+    </h1>
 </div>
 
 <div class="span3">
@@ -12,28 +18,15 @@
         <input type="text" class="input-medium search-query" value="{{ request.GET.q }}" name="q" />
         <button type="submit" class="btn">Search</button>
     </form>
+
 {% if contact %}
-    {% if contact.name %}
-        <h4>{{ contact.email }}</h4>
-    {% endif %}
-    <p><strong>Client:</strong> 
-    {% if contact.client %}
-        <a href="{{ contact.client.get_absolute_url }}">{{ contact.client }}</a>
-    {% else %}
-        <a href="{{ contact.client.get_absolute_url }}">Pick a Client (dropdown?)</a>
-    {% endif %}
-    </p>
+    {% include "message_sidebar_contact.html" with contact=contact %}
 {% endif %}
 
 {% if client %}
-    <h3>Contacts</h3>
-    <ul>
-    {% for contact in client.contacts %}
-        <li><a href="{{ contact.get_absolute_url }}">{{ contact }}</a></li>
-    {% endfor %}
-        <li><a href="#">Add a contact</a></li>
-    </ul>
+    {% include "message_sidebar_client.html" with client=client %}
 {% endif %}
+
 </div>
 <div class="span9">
 

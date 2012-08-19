@@ -126,7 +126,7 @@ class AccountChangeView(LoginRequiredMixin, UpdateView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class ProfileAddView(LoginRequiredMixin, FormView):
+class ProfileAddView(FormView):
     template_name = 'profile_add.html'
     form_class = ProfileAddForm
 
@@ -343,7 +343,8 @@ class ClientCreate(LoginRequiredMixin, CreateView):
     template_name = 'client_form.html'
 
     def get_success_url(self):
-        return lazy_reverse('client_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'New Client %s has been added.' % self.object.name, extra_tags='success')
+        return self.object.get_absolute_url()
 
     def post(self, request, *args, **kwargs):
         self.account = request.user.profile.account
@@ -366,15 +367,27 @@ class ClientChange(LoginRequiredMixin, UpdateView):
     template_name = 'client_form.html'
 
     def get_success_url(self):
-        return lazy_reverse('client_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'Client %s has been updated.' % self.object.name, extra_tags='success')
+        return self.object.get_absolute_url()
 
 
 class ContactCreate(LoginRequiredMixin, CreateView):
     model = Contact
     template_name = 'contact_form.html'
 
+    def post(self, request, *args, **kwargs):
+        self.account = request.user.profile.account
+        return super(ContactCreate, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.account = self.account
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
-        return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'New Contact %s has been added.' % self.object, extra_tags='success')
+        return self.object.get_absolute_url()
 
 
 class ContactList(LoginRequiredMixin, ListView):
@@ -387,7 +400,8 @@ class ContactChange(LoginRequiredMixin, UpdateView):
     template_name = 'contact_form.html'
 
     def get_success_url(self):
-        return lazy_reverse('contact_list', self.request.user.profile.account.slug)
+        messages.success(self.request, 'Contact %s has been updated.' % self.object.name, extra_tags='success')
+        return self.object.get_absolute_url()
 
 
 class ProfileList(LoginRequiredMixin, ListView):

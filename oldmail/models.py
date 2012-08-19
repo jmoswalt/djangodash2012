@@ -44,6 +44,9 @@ class Client(models.Model):
     def get_absolute_url(self):
         return reverse('client_message_list', args=[self.account.slug, self.pk])
 
+    def get_change_url(self):
+        return reverse('client_change', args=[self.account.slug, self.pk])
+
 
 class Profile(models.Model):
     """docstring for Profile"""
@@ -90,6 +93,9 @@ class Contact(models.Model):
 
     def get_absolute_url(self):
         return reverse('contact_message_list', args=[self.account.slug, self.pk])
+
+    def get_change_url(self):
+        return reverse('contact_change', args=[self.account.slug, self.pk])
 
 
 class Message(models.Model):

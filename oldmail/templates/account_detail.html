@@ -1,17 +1,27 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="span12">
+    <h1>{{ account.name }}</h1>
+</div>
 <div class="span3">
     {% include "account_sidebar.html" %}
 </div>
-<div class="span9">
-    <h1>Main body for account page</h1>
-    <p>Maybe pull in latest emails?</p>
+<div class="span4">
+    <h4>Contacts</h4>
     <ul>
     {% for contact in account.contacts %}
         <li><a href="{{ contact.get_absolute_url }}">{{ contact }} ({{ contact.messages|length }})</a></li>
     {% endfor %}
     </ul>
-    <a href="{% url account_change account.slug %}" class="btn btn-info">Change account name</a>
+</div>
+<div class="span4">
+    <h4>Clients</h4>
+    <a style="btn btn-success" href="{% url client_add user.profile.account.slug %}">Add a client</a>
+    <ul>
+    {% for client in request.user.profile.account.clients %}
+        <li><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></li>
+    {% endfor %}
+    </ul>
 </div>
 {% endblock body %}
