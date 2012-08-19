@@ -15,10 +15,6 @@
       <!-- Everything you want hidden at 940px or less, place within here -->
       <div class="nav-collapse">
         <ul class="nav">
-          {% if not request.user.is_authenticated %}
-          <li><a href="{% url signup %}">Signup</a></li>
-          {% endif %}
-
 
           {% if request.user.is_authenticated and request.user.profile.account %}
           <li><a href="{% url account_detail request.user.profile.account.slug %}">Dashboard</a></li>
@@ -32,6 +28,7 @@
         </ul>
         <ul class="nav pull-right">
           {% if not request.user.is_authenticated %}
+          <li><a href="{% url signup %}">Signup</a></li>
           <li><a href="{% url django.contrib.auth.views.login %}">Login</a></li>
           {% else %}
           <li><a href="{% url account_change user.profile.account.slug %}">My Account</a></li>
