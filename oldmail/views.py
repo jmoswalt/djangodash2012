@@ -22,6 +22,12 @@ from oldmail.decorators import staff_or_super_required
 from oldmail.utils import send_email, random_string
 
 
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+
+
 class HomePageView(TemplateView):
     template_name = "home.html"
 
@@ -30,13 +36,9 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
-class AccountView(DetailView):
+class AccountView(LoginRequiredMixin, DetailView):
     model = Account
     template_name = "account_detail.html"
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -48,7 +50,7 @@ class AccountView(DetailView):
         return obj
 
 
-class AccountAdd(FormView):
+class AccountAdd(LoginRequiredMixin, FormView):
     template_name = 'account_create.html'
     form_class = AccountAddForm
 
@@ -61,7 +63,7 @@ class AccountAdd(FormView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class AccountListView(ListView):
+class AccountListView(LoginRequiredMixin, ListView):
     model = Account
     template_name = "account_list.html"
 
@@ -70,13 +72,9 @@ class AccountListView(ListView):
         return super(AccountListView, self).dispatch(*args, **kwargs)
 
 
-class AccountInviteView(UpdateView):
+class AccountInviteView(LoginRequiredMixin, UpdateView):
     template_name = "account_invite.html"
     form_class = AccountInviteForm
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountInviteView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -109,13 +107,9 @@ class AccountInviteView(UpdateView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class AccountChangeView(UpdateView):
+class AccountChangeView(LoginRequiredMixin, UpdateView):
     template_name = "account_change.html"
     form_class = AccountChangeForm
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(AccountChangeView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -131,7 +125,7 @@ class AccountChangeView(UpdateView):
         return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
 
 
-class ProfileAddView(FormView):
+class ProfileAddView(LoginRequiredMixin, FormView):
     template_name = 'profile_add.html'
     form_class = ProfileAddForm
 
@@ -167,16 +161,12 @@ class ProfileVerifyView(DetailView):
         return HttpResponseRedirect(reverse('account_invite', args=[self.get_object().account.slug]))
 
 
-class MessageView(DetailView):
+class MessageView(LoginRequiredMixin, DetailView):
     """
     View of a single message
     """
     template_name = 'message_detail.html'
     model = Message
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(MessageView, self).dispatch(*args, **kwargs)
 
     def get_object(self, **kwargs):
         user = self.request.user
@@ -254,7 +244,7 @@ def authenticate_callback(request):
     refresh_token = content_d['refresh_token']
 
 
-class ClientDetail(DetailView):
+class ClientDetail(LoginRequiredMixin, DetailView):
     model = Client
     template_name = 'client_detail.html'
 
@@ -271,7 +261,7 @@ class ClientDetail(DetailView):
         return super(ClientDetail, self).render_to_response(context, **kwargs)
 
 
-class ClientCreate(CreateView):
+class ClientCreate(LoginRequiredMixin, CreateView):
     model = Client
     template_name = 'client_form.html'
 
@@ -289,12 +279,12 @@ class ClientCreate(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ClientList(ListView):
+class ClientList(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client_list.html'
 
 
-class ClientChange(UpdateView):
+class ClientChange(LoginRequiredMixin, UpdateView):
     model = Client
     template_name = 'client_form.html'
 
@@ -302,7 +292,7 @@ class ClientChange(UpdateView):
         return lazy_reverse('client_list', self.request.user.profile.account.slug)
 
 
-class ContactCreate(CreateView):
+class ContactCreate(LoginRequiredMixin, CreateView):
     model = Contact
     template_name = 'contact_form.html'
 
@@ -310,12 +300,12 @@ class ContactCreate(CreateView):
         return lazy_reverse('contact_list', self.request.user.profile.account.slug)
 
 
-class ContactList(ListView):
+class ContactList(LoginRequiredMixin, ListView):
     model = Contact
     template_name = 'contact_list.html'
 
 
-class ContactChange(UpdateView):
+class ContactChange(LoginRequiredMixin, UpdateView):
     model = Contact
     template_name = 'contact_form.html'
 
@@ -323,12 +313,12 @@ class ContactChange(UpdateView):
         return lazy_reverse('contact_list', self.request.user.profile.account.slug)
 
 
-class ProfileList(ListView):
+class ProfileList(LoginRequiredMixin, ListView):
     model = Profile
     template_name = 'profile_list.html'
 
 
-class ProfileChange(UpdateView):
+class ProfileChange(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileChangeForm
     template_name = 'profile_form.html'
