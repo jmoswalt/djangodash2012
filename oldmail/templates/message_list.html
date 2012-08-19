@@ -18,8 +18,8 @@
     <form class=" form-search" action="" method="get">
         <input type="text" class="input-medium search-query" value="{{ request.GET.q }}" name="q" />
         <button type="submit" class="btn">Search</button>
-        <span style="padding-left: 16px; ">{{ message_list|length }} Message{{ message_list|length|pluralize }} found</span>
     </form>
+    <span style="padding-left: 16px; ">{{ message_list|length }} Message{{ message_list|length|pluralize }} found</span>
 
 
 {% if contact %}
