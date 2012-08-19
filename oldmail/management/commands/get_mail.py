@@ -15,7 +15,20 @@ class Command(BaseCommand):
     """
     def get_contact(self, to_email_addr, from_email_addr, profile):
         c = None
-        # First we check if the to address is the client.
+        # First we check if the from address is the client.
+        from_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", from_email_addr).split(',')[0].lower()
+        from_name = ''
+        if "<" in from_email_addr:
+            from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
+        if from_email != profile.user.email:
+            try:
+                c = Contact.objects.get(email=from_email, account=profile.account)
+                return c
+            except:
+                c = Contact.objects.create(email=from_email, name=from_name, account=profile.account)
+                return c
+
+        # now we check the to
         to_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", to_email_addr).split(',')[0].lower()
         to_name = ''
         if "<" in to_email_addr:
@@ -27,19 +40,6 @@ class Command(BaseCommand):
                 return c
             except:
                 c = Contact.objects.create(email=to_email, name=to_name, account=profile.account)
-                return c
-
-        # now we check the from
-        from_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", from_email_addr).split(',')[0].lower()
-        from_name = ''
-        if "<" in from_email_addr:
-            from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
-        if from_email != profile.user.email:
-            try:
-                c = Contact.objects.get(email=from_email, account=profile.account)
-                return c
-            except:
-                c = Contact.objects.create(email=from_email, name=from_name, account=profile.account)
                 return c
 
         # to email and from email are same as profile_email
