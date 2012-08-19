@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
+{% block css %}
+<style type="text/css">
+body { background-color: #fff !important; }
+h2 { color: #000 !important; }
+</style>
+{% endblock css %}
+
 {% block body %}
 <div class="span12">
     <h2>Subject: {{ message.m_subject }}</h2>
@@ -37,10 +44,10 @@
 </div>
 <div class="span9 clearfix">
     <div class="well">
-        {% if "<html>" in message.m_body %}
+        {% if "html" in message.m_body|slice:":20" %}
             {{ message.m_body|safe }}
         {% else %}
-            {{ message.m_body|striptags|urlize|linebreaks }}
+            {{ message.m_body|removetags:"span table img script meta"|safe|urlize|linebreaks }}
         {% endif %}
     </div>
 </div>

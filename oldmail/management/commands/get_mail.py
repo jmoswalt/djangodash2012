@@ -16,10 +16,10 @@ class Command(BaseCommand):
     def get_contact(self, to_email_addr, from_email_addr, profile):
         c = None
         # First we check if the to address is the client.
-        to_email = re.sub("(.*)<([\\w\\.\\@]+)>", "\\2", to_email_addr).split(',')[0]
+        to_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", to_email_addr).split(',')[0]
         to_name = ''
         if "<" in to_email_addr:
-            to_name = to_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '')
+            to_name = to_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
         # make sure the address is not the sender
         if to_email != profile.user.email:
             try:
@@ -30,10 +30,10 @@ class Command(BaseCommand):
                 return c
 
         # now we check the from
-        from_email = re.sub("(.*)<([\\w\\.\\@]+)>", "\\2", from_email_addr).split(',')[0]
+        from_email = re.sub("(.*)<([\\w\\-\\.\\@]+)>", "\\2", from_email_addr).split(',')[0]
         from_name = ''
         if "<" in from_email_addr:
-            from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '')
+            from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=20', ' ')
         if from_email != profile.user.email:
             try:
                 c = Contact.objects.get(email=from_email, account=profile.account)
@@ -52,13 +52,17 @@ class Command(BaseCommand):
         return result.split(',')[0].lower()
 
     def parse_subject(self, subject):
-        result = subject.replace('=20', ' ').replace('=?UTF-8?Q?', '').replace('=?utf-8?Q?', '')
+        result = subject.replace('=20', ' ').replace('=?UTF-8?Q?', '').replace('=?utf-8?Q?', '').replace('?=', '').replace('=27', "'").replace('=E2=80=99', "'")
         return result
 
     def parse_body(self, body):
-        result = body.replace('=3D', '=').replace('=20', ' ').replace('=0D', '')
-        result = result.replace('=\r', '').replace("=90", '')
+        result = body.replace('=\r\n', '').replace('=\n\r', '')
+        if "<html>" in body:
+            result = result.replace('\r', '').replace('\n', '')
+        result = result.replace('=3D', '=').replace('=20', ' ').replace('=0D', '')
+        result = result.replace("=90", '').replace("=09", '')
         result = result.replace('=C2=A0', ' ').replace('=E2=80=99', "'")
+        result = result.replace('=0A', '')
         return result
 
     def handle(self, *args, **options):
