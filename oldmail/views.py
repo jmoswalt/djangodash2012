@@ -7,7 +7,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login, authenticate as dj_auth
 from django.contrib.auth.models import User
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
 from django.http import Http404
@@ -528,6 +530,18 @@ class ProfileChange(LoginRequiredMixin, UpdateView):
             kwargs.update({'status': 403})
 
         return super(ProfileChange, self).render_to_response(context, **kwargs)
+
+
+class SearchView(LoginRequiredMixin, TemplateView):
+    template_name = 'search.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchView, self).get_context_data(**kwargs)
+
+        context['clients'] = Client.objects.all()
+        context['contacts'] = Contact.objects.all()
+
+        return context
 
 
 #@login_required
