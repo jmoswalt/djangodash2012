@@ -13,18 +13,16 @@ urlpatterns = patterns('oldmail.views',
     url(r'^oauth/$', 'get_request_token', name="get_request_token"),
     url(r'^oauthcallback/$', 'oauth_callback', name="oauth_callback"),
 
+    url(r'^profile/activate/(?P<random_string>[\w]+)/$', views.ProfileAddView.as_view(), name="profile_activate"),
+    url(r'^profile/verify/(?P<random_string>[\w]+)/$', views.ProfileVerifyView.as_view(), name="profile_verify"),
+    url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
+    url(r'^profile/change/(?P<pk>\d+)/$', views.ProfileChange.as_view(), name="profile_change"),
+
     url(r'^client/(?P<pk>\d+)/$', views.ClientDetail.as_view(), name="client_detail"),
     url(r'^client/add/$', views.ClientCreate.as_view(), name="client_add"),
     url(r'^client/list/$', views.ClientList.as_view(), name="client_list"),
     url(r'^client/change/(?P<pk>\d+)/$', views.ClientChange.as_view(), name="client_change"),
     url(r'^client/(?P<pk>\d+)/messages/$', views.ClientMessageList.as_view(), name="client_message_list"),
-
-    url(r'^profile/activate/(?P<random_string>[\w]+)/$', views.ProfileAddView.as_view(), name="profile_activate"),
-    url(r'^profile/verify/(?P<random_string>[\w]+)/$', views.ProfileVerifyView.as_view(), name="profile_verify"),
-    # url(r'^profile/$', 'profile_detail', name="profile_detail"),
-    # url(r'^profile/add/$', 'profile_add', name="profile_add"),
-    url(r'^profile/list/$', views.ProfileList.as_view(), name="profile_list"),
-    url(r'^profile/change/(?P<pk>\d+)/$', views.ProfileChange.as_view(), name="profile_change"),
 
     url(r'^contact/add/$', views.ContactCreate.as_view(), name="contact_add"),
     url(r'^contact/list/$', views.ContactList.as_view(), name="contact_list"),
@@ -32,11 +30,4 @@ urlpatterns = patterns('oldmail.views',
     url(r'^contact/(?P<pk>\d+)/$', views.ContactMessageList.as_view(), name="contact_message_list"),
 
     url(r'^message/(?P<pk>\d+)/$', views.MessageView.as_view(), name="message_detail"),
-    # url(r'^message/add/$', 'message_add', name="message_add"),
-    # url(r'^message/list/$', 'message_list', name="message_list"),
-    # url(r'^message/change/$', 'message_change', name="message_change"),
-
-    # url(r'^link/add/$', 'link_add', name="link_add"),
-    # url(r'^link/list/$', 'link_list', name="link_list"),
-    # url(r'^link/change/$', 'link_change', name="link_change"),
 )
