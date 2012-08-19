@@ -20,7 +20,19 @@
             {% for client in clients %}
             <tr>
                 <td><a href="{% url client_message_list user.profile.account.slug client.pk %}">
-                    {{ client }}</a></td>
+                    {{ client }}</a>&nbsp;
+
+                    <span class="label label-info">
+                        {{ client.contacts|length }} 
+                        Contact{{ clients.contacts|length|pluralize }}
+                    </span>&nbsp;
+
+                    <span class="label label-inverse">
+                    {{ client.messages|length }}
+                    Message{{ clients.messages|length|pluralize }}
+                    </span>
+
+                </td>
             </tr>
             {% empty %}
             <tr><td colspan="3">Found 0 out of {{ client_total }} clients, I'll show myself out.</td></tr>
@@ -36,7 +48,14 @@
             {% for contact in contacts %}
             <tr>
                 <td><a href="{% url contact_message_list user.profile.account.slug contact.pk %}">
-                    {{ contact }}</a></td>
+                    {{ contact }}</a>&nbsp;
+
+                    <span class="label label-inverse">
+                    {{ contact.messages|length }}
+                    Message{{ contact.messages|length|pluralize }}
+                    </span>
+
+                </td>
             </tr>
             {% empty %}
             <tr><td colspan="3">Found 0 out of {{ contact_total }} contacts, you should consider lasik.</td></tr>
