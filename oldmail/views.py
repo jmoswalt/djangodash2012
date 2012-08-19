@@ -26,7 +26,7 @@ from oldmail.models import Account, Client, SignupLink, Profile, Contact, Messag
 from oldmail.forms import AccountAddForm, AccountChangeForm, AccountInviteForm, ProfileAddForm, ProfileChangeForm
 from oldmail.utils import send_email, random_string
 
-from oldmail.lib.xoauth import get_oauth_signature
+from oldmail.xoauth import get_oauth_signature
 
 
 @login_required
