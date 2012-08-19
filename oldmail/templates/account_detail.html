@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}OldMail Dashboard for {{ account.name }}{% endblock title %}
+
 {% block head %}
 {% if account.messages_stats_last30 %}
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>

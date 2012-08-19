@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}OldMail Contact List{% endblock title %}
+
 {% block body %}
     <div><a href="{% url contact_add user.profile.account.slug %}">Add a client</a></div>
     <div class="span5 offset4">
