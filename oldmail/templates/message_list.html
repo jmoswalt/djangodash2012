@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+
+<div class="span12">
+    <h1>Messages for {% firstof contact client %}</h1>
+</div>
+
+<div class="span3">
+{% if contact %}
+    {% if contact.name %}
+        <h4>{{ contact.email }}</h4>
+    {% endif %}
+    {% if contact.client %}
+        <p><strong>Client:</strong> <a href="{{ contact.client.get_absolute_url }}">{{ contact.client }}</a></p>
+    {% endif %}
+{% endif %}
+
+{% if client %}
+    <h3>Contacts</h3>
+    <ul>
+    {% for contact in client.contacts %}
+        <li><a href="{{ contact.get_absolute_url }}">{{ contact }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+</div>
+<div class="span9">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>Subject</th>
+            <th>From / To</th>
+            <th>Date Sent</th>
+        </tr>
+        {% for message in message_list %}
+        <tr>
+            <td><a href="{% url message_detail user.profile.account.slug message.pk %}">{{ message.m_subject }}</a></td>
+            <td>From: 
+                {% if message.contact.email == message.m_from %}<a href="{{ message.contact.get_absolute_url }}">{% endif %}
+                {{ message.m_from }}
+                {% if message.contact.email == message.m_from %}</a>{% endif %}
+
+                <br />To: 
+                {% if message.contact.email == message.m_to %}<a href="{{ message.contact.get_absolute_url }}">{% endif %}
+                {{ message.m_to }}
+                {% if message.contact.email == message.m_to %}</a>{% endif %}
+             </td>
+            <td>{{ message.m_date }}<br />
+                {{ message.m_date|timesince }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock body %}

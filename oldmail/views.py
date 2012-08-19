@@ -172,12 +172,74 @@ class MessageView(LoginRequiredMixin, DetailView):
         user = self.request.user
         account = get_object_or_404(Account, slug=self.kwargs['slug'])
         # Check if you can see this object
+        # no special exemptions for staff or superusers
+        if not user.profile.account == account:
+            raise Http404
+
+        obj = get_object_or_404(Message, pk=self.kwargs['pk'], profile__account=account.pk)
+        return obj
+
+
+class ContactMessageList(ListView):
+    """
+    A list of messages filtered for a specific Contact
+    """
+    model = Message
+    template_name = "message_list.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ContactMessageList, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactMessageList, self).get_context_data(**kwargs)
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        context['contact'] = get_object_or_404(Contact, pk=self.kwargs['pk'], account=account)
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        contact = get_object_or_404(Contact, pk=self.kwargs['pk'], account=account)
+
         if not user.is_staff and not user.is_superuser:
             if not user.profile.account == account:
                 raise Http404
 
-        obj = get_object_or_404(Message, pk=self.kwargs['pk'])
-        return obj
+        qs = Message.objects.filter(contact=contact)
+
+        return qs
+
+
+class ClientMessageList(ListView):
+    """
+    A list of messages filtered for a specific Client
+    """
+    model = Message
+    template_name = "message_list.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ClientMessageList, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ClientMessageList, self).get_context_data(**kwargs)
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        context['client'] = get_object_or_404(Client, pk=self.kwargs['pk'], account=account)
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        account = get_object_or_404(Account, slug=self.kwargs['slug'])
+        client = get_object_or_404(Client, pk=self.kwargs['pk'], account=account)
+
+        if not user.is_staff and not user.is_superuser:
+            if not user.profile.account == account:
+                raise Http404
+
+        qs = Message.objects.filter(client=client)
+
+        return qs
 
 
 #@login_required

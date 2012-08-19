@@ -38,6 +38,9 @@ class Client(models.Model):
     def messages(self):
         return self.message_set.all()
 
+    def get_absolute_url(self):
+        return reverse('client_message_list', args=[self.account.slug, self.pk])
+
 
 class Profile(models.Model):
     """docstring for Profile"""
@@ -67,16 +70,26 @@ class Profile(models.Model):
 class Contact(models.Model):
     """docstring for Contact"""
     client = models.ForeignKey('Client', null=True)
+    account = models.ForeignKey('Account', editable=False)
     name = models.CharField(max_length=100, blank=True)
     email = models.EmailField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return self.email
 
     def messages(self):
         return self.message_set.all()
+
+    def get_absolute_url(self):
+        if self.client:
+            return reverse('contact_message_list', args=[self.account.slug, self.pk])
+        else:
+            return "#"  # TODO: link to the assign_contact page
 
 
 class Message(models.Model):
@@ -94,7 +107,10 @@ class Message(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.pk
+        return self.m_subject
+
+    def get_absolute_url(self):
+        return reverse('message_detail', args=[self.contact.account.slug, self.pk])
 
 
 class SignupLink(models.Model):

@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     Needs 1 arg, the email address for the associated profile
     """
-    def get_client(self, to_email_addr, from_email_addr, profile_email):
+    def get_client(self, to_email_addr, from_email_addr, profile):
         c = None
         # First we check if the to address is the client.
         to_email = re.sub("(.*)<([\\w\\.\\@]+)>", "\\2", to_email_addr).split(',')[0]
@@ -21,12 +21,12 @@ class Command(BaseCommand):
         if "<" in to_email_addr:
             to_name = to_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '')
         # make sure the address is not the sender
-        if to_email != profile_email:
+        if to_email != profile.user.email:
             try:
-                c = Contact.objects.get(email=to_email, name=to_name)
+                c = Contact.objects.get(email=to_email, name=to_name, account=profile.account)
                 return c
             except:
-                c = Contact.objects.create(email=to_email, name=to_name)
+                c = Contact.objects.create(email=to_email, name=to_name, account=profile.account)
                 return c
 
         # now we check the from
@@ -34,17 +34,17 @@ class Command(BaseCommand):
         from_name = ''
         if "<" in from_email_addr:
             from_name = from_email_addr.split("<")[0].rstrip().replace("'", '').replace('"', '')
-        if from_email != profile_email:
+        if from_email != profile.user.email:
             try:
-                c = Contact.objects.get(email=from_email, name=from_name)
+                c = Contact.objects.get(email=from_email, name=from_name, account=profile.account)
                 return c
             except:
-                c = Contact.objects.create(email=from_email, name=from_name)
+                c = Contact.objects.create(email=from_email, name=from_name, account=profile.account)
                 return c
 
         # to email and from email are same as profile_email
         if to_email == from_email:
-            c = Contact.objects.create(email=from_email)
+            c = Contact.objects.create(email=from_email, account=profile.account)
             return c
 
     def parse_address(self, address):
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             message = messages.getMessage(gmessage.uid)
 
             # Check To and From addresses for Contact
-            contact = self.get_client(message.To, message.From, email_address)
+            contact = self.get_client(message.To, message.From, profile)
             print contact.pk
             # Check Contact for number of Clients
 
