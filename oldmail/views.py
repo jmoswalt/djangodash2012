@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.views.generic import TemplateView, DetailView, ListView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.conf import settings
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.utils import simplejson
@@ -339,7 +339,8 @@ class ProfileChange(UpdateView):
     def render_to_response(self, context, **kwargs):
 
         # if you're not an inny you're outty
-        if not self.request.user.pk == self.object.pk:
+        if self.request.user.pk == self.object.pk:
             self.template_name = '403.html'
+            kwargs.update({'status': 403})
 
         return super(ProfileChange, self).render_to_response(context, **kwargs)
