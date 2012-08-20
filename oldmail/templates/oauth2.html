@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Setup OldMail Sync{% endblock title %}
+
+{% block css %}
+{{ block.super }}
+<style>
+.oauth-btn{ margin: 2em; }
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="span12">
+    <h1>Set Up and Authorize</h1>
+    <ol>
+        <li>Step 1: Create a label "{{ folder_name }}" in your gmail account.</li>
+        <li>Step 2: Click the button below to authorize your account.</li>
+    </ol>
+    <div class="oauth-btn">
+    	<form method="post">{% csrf_token %}
+    		<input type="submit" name="submit" value="Authorize My Gmail Account" />
+    	</form>
+
+    </div>
+</div>
+{% endblock body %}

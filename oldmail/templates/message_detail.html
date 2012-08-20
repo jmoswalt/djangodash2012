@@ -7,6 +7,7 @@
 <style type="text/css">
 body { background-color: #fff !important; }
 h2 { color: #000 !important; }
+.btn-del-msg{float: right;}
 </style>
 {% endblock css %}
 
@@ -52,7 +53,18 @@ h2 { color: #000 !important; }
         {% else %}
             {{ message.m_body|removetags:"span table img script meta"|safe|urlize|linebreaks }}
         {% endif %}
-    </div>
+    </div>   
 </div>
+	<div class="delete-form">
+    <form name="message_delete" method="POST" action="{% url delete_message message.contact.account.slug, message.id  %}">{% csrf_token %}
+        <input class="btn btn-danger btn-del-msg"  type="submit" name="submit" value="Delete" onclick="this.submit()">
+    </form>
+	</div>
+	<div style="clear: right;"></div>
+
+
+               
+
+
 
 {% endblock body %}

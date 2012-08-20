@@ -1,6 +1,6 @@
 import random
 import time
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import login, authenticate as dj_auth
@@ -268,7 +268,24 @@ class ContactMessageList(LoginRequiredMixin, ListView):
         qs.order_by('m_date')
 
         return qs
+    
+@login_required
+def delete_message(request, **kwargs):
+    account = get_object_or_404(Account, slug=kwargs['slug'])
+    [message] = Message.objects.filter(pk=kwargs['pk'])[:1] or [None]
+    
+    if not all([account.slug,
+               message, 
+               request.method == "POST"]):
+        raise Http404
 
+    message.delete()
+    messages.add_message(request, messages.SUCCESS, 
+            'Successfully deleted "%s". You must ' % message + \
+            'remove the label "%s" or this email '  %  settings.CLIENT_FOLDER_NAME + \
+            'will be resynced at a later date.')
+    return HttpResponseRedirect(reverse('account_detail', args=[account.slug]))
+    
 
 class ClientMessageList(LoginRequiredMixin, ListView):
     """
